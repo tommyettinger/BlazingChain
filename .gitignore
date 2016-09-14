@@ -1,0 +1,14 @@
+# Build and Release Folders
+build/
+target/
+*.class
+*.iml
+.idea/
+.settings/
+
+*.jar
+
+# jEdit garbage
+*~
+*#*#
+*#*.*#
