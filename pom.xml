@@ -9,6 +9,8 @@
     <version>1.4.4</version>
     <description>LZ-String encoding for Java; cross-platform to desktop, GWT, and Android at the minimum.
     </description>
+    <name>BlazingChain</name>
+
 
     <url>https://github.com/tommyettinger/BlazingChain</url>
 

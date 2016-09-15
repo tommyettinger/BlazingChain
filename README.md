@@ -1,6 +1,8 @@
 BlazingChain
 --
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.tommyettinger/blazingchain/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/com.github.tommyettinger/blazingchain)
+
 This one-file library can be used to compress Java/JVM Strings with LZ-String encoding, as developed by
 [pieroxy](https://github.com/pieroxy/lz-string) for JavaScript and continued by rufushuang in a Java port.
 This code is a cleaned-up and optimized copy of rufushuang's
@@ -30,8 +32,19 @@ inner classes, and a few other performance tweaks, like appending to one StringB
 earlier approach of making an ArrayList of boxed Characters, appending to that, and then re-appending
 each Character to another StringBuilder. If premature optimization is the root of all evil, I need an
 exorcist, but thankfully the code is small enough that not too much extra work was needed in the
-original Java code. Documentation should be added at some point, but the method names are straightforward
-and the API surface is small at 8 methods, half for compression and half for decompression.
+original Java code. Javadocs are available in the code and on Maven Central, but the method names are
+clear and the API surface is small at 8 methods, half for compression and half for decompression.
+
+Usage
+---
+
+You can get this version (which should be compatible with lz-string 1.4.4)
+[using this info on Maven Central](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cblazingchain%7C1.4.4%7Cjar).
+That page provides dependency info for many build tools including Maven, Gradle, Ivy, SBT, and Lein.
+There should be a release on GitHub as well.
+
+Other
+---
 
 The name is a play on the LZ in Blazing and LZ-String, and Chain being a String-like object, but is also
 a reference to [an obscure, no-longer-canon group](http://starwars.wikia.com/wiki/Blazing_Chain) from
