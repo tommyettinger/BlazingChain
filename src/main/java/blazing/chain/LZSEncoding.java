@@ -24,6 +24,12 @@ public class LZSEncoding {
                     52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
                     0, 0, 0, 0, 0, 0, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51};
 
+    /**
+     * Compress a String using LZ-String encoding but only using Base64 characters ('A'-'Z', 'a'-'z', '0'-'9', '+', '/',
+     * and '=' for Base64 validity).
+     * @param uncompressed an uncompressed String to encode
+     * @return the encoded, compressed String
+     */
     public static String compressToBase64(String uncompressed) {
         if (uncompressed == null)
             return "";
@@ -41,6 +47,11 @@ public class LZSEncoding {
         }
     }
 
+    /**
+     * Decompresses a String that had been compressed with {@link #compressToBase64(String)}.
+     * @param compressed a Base64-encoded, compressed String
+     * @return the original uncompressed version of the String
+     */
     public static String decompressFromBase64(String compressed) {
         if (compressed == null)
             return null;
@@ -52,12 +63,23 @@ public class LZSEncoding {
         return LZSEncoding._decompress(input.length, 32, input, valStrBase64, 0);
     }
 
+    /**
+     * Compresses a String using the properties of UTF-16 encoding to store approximately 15 bits of LZW-compressed text
+     * in each 2-byte Unicode character, which does particularly well with ASCII text and can be smaller than UTF-8 in
+     * some cases, especially where each char must be stored as UTF-16, e.g. Java Strings or browser-based LocalStorage.
+     * @param uncompressed an uncompressed String to encode
+     * @return the encoded, compressed String
+     */
     public static String compressToUTF16(String uncompressed) {
         if (uncompressed == null)
             return null;
         return LZSEncoding._compress(uncompressed, 15, null, 32) + " ";
     }
-
+    /**
+     * Decompresses a String that had been compressed with {@link #compressToUTF16(String)}.
+     * @param compressed a UTF16-encoded (as by {@link #compressToUTF16(String)}), compressed String
+     * @return the original uncompressed version of the String
+     */
     public static String decompressFromUTF16(String compressed) {
         if (compressed == null)
             return null;
@@ -67,12 +89,22 @@ public class LZSEncoding {
         return LZSEncoding._decompress(comp.length, 16384, comp, null, -32);
     }
 
+    /**
+     * Compress a String using LZ-String encoding but only using valid URI component characters ('A'-'Z', 'a'-'z',
+     * '0'-'9', '+', '-', and possibly '$').
+     * @param uncompressed an uncompressed String to encode
+     * @return the encoded, compressed String
+     */
     public static String compressToEncodedURIComponent(String uncompressed) {
         if (uncompressed == null)
             return null;
-        return LZSEncoding._compress(uncompressed, 6, keyStrUriSafe, 0) + " ";
+        return LZSEncoding._compress(uncompressed, 6, keyStrUriSafe, 0) + ' ';
     }
-
+    /**
+     * Decompresses a String that had been compressed with {@link #compressToEncodedURIComponent(String)}.
+     * @param compressed a URI-encoded, compressed String
+     * @return the original uncompressed version of the String
+     */
     public static String decompressFromEncodedURIComponent(String compressed) {
         if (compressed == null) return null;
         if (compressed.isEmpty()) return "";
@@ -81,6 +113,12 @@ public class LZSEncoding {
         return LZSEncoding._decompress(input.length, 32, input, valStrUriSafe, 0);
     }
 
+    /**
+     * Compresses a String as tightly as possible by using 16 bits of each 16-bit character, which can infrequently
+     * result in invalid UTF-16 codepoints, but that may not matter for all applications.
+     * @param uncompressed an uncompressed String to encode
+     * @return the encoded, compressed String
+     */
     public static String compress(String uncompressed) {
         return LZSEncoding._compress(uncompressed, 16, null, 0);
     }
@@ -289,7 +327,11 @@ public class LZSEncoding {
         }
         return context_data.toString();
     }
-
+    /**
+     * Decompresses a String that had been compressed with {@link #compress(String)}.
+     * @param compressed a compressed String using the default encoding from {@link #compress(String)}
+     * @return the original uncompressed version of the String
+     */
     public static String decompress(final String compressed) {
         if (compressed == null)
             return null;
@@ -299,6 +341,10 @@ public class LZSEncoding {
     }
 
     private static String _decompress(int length, int resetValue, char[] getNextValue, char[] modify, int offset) {
+        if(getNextValue == null)
+            return null;
+        if(getNextValue.length == 0)
+            return "";
         ArrayList<String> dictionary = new ArrayList<String>();
         int enlargeIn = 4, dictSize = 4, numBits = 3, position = resetValue, index = 1, resb, maxpower, power;
         String entry, w, c;
