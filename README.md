@@ -41,7 +41,9 @@ Usage
 You can get this version (which should be compatible with lz-string 1.4.4)
 [using this info on Maven Central](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cblazingchain%7C1.4.4%7Cjar).
 That page provides dependency info for many build tools including Maven, Gradle, Ivy, SBT, and Lein.
-There should be a release on GitHub as well.
+There should be a release on GitHub as well. For GWT, you will need this inherits line:
+
+`<inherits name='blazingchain' />`
 
 Other
 ---
