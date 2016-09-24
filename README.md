@@ -33,17 +33,52 @@ earlier approach of making an ArrayList of boxed Characters, appending to that, 
 each Character to another StringBuilder. If premature optimization is the root of all evil, I need an
 exorcist, but thankfully the code is small enough that not too much extra work was needed in the
 original Java code. Javadocs are available in the code and on Maven Central, but the method names are
-clear and the API surface is small at 8 methods, half for compression and half for decompression.
+clear and the API surface is small at 8 methods, half for compression and half for decompression. Some
+small examples (really, really small) are below.
 
 Usage
 ---
 
+```java
+import blazing.chain.LZSEncoding; // or you can import static , this is all static.
+...
+String longText, compressed, decompressed;
+longText = "This is some long, long, long, long, long, repetitive text!";
+////These next two lines use the tightest encoding; it can use all of Unicode,
+//// but may produce invalid UTF-16 codepoint pairs.
+compressed = LZSEncoding.compress(longText);
+decompressed = LZSEncoding.decompress(compressed);
+////you can try the next line if you want to make sure they really are equal.
+//assert(longText.equals(decompressed));
+
+////Other encodings have similar pairings of compress method to decompress method.
+
+////This kind of encoding uses 15 of the 16 bits in a UTF-16 char, but should
+//// always produce valid UTF-16. It does not compress quite as well as the first
+//// method, but is compatible with various places that primarily use UTF-16.
+//compressed = LZSEncoding.compressToUTF16(longText);
+//decompressed = LZSEncoding.decompressFromUTF16(compressed);
+
+////This kind of encoding uses pure ASCII, specifically the 64 Base64 characters,
+//// plus possibly '=' as a suffix.
+//compressed = LZSEncoding.compressToBase64(longText);
+//decompressed = LZSEncoding.decompressFromBase64(compressed);
+
+////This kind of encoding uses pure ASCII, specifically the 64 characters that
+//// are valid in URI component encoding.
+//compressed = LZSEncoding.compressToEncodedURIComponent(longText);
+//decompressed = LZSEncoding.decompressFromEncodedURIComponent(compressed);
+```
+
+Installation
+---
+
 You can get this version (which should be compatible with lz-string 1.4.4)
-[using this info on Maven Central](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cblazingchain%7C1.4.4%7Cjar).
+[using this info on Maven Central](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cblazingchain%7C1.4.4.1%7Cjar).
 That page provides dependency info for many build tools including Maven, Gradle, Ivy, SBT, and Lein.
 There should be a release on GitHub as well. For GWT, you will need this inherits line:
 
-`<inherits name='blazingchain' />`
+`<inherits name='blazing.chain' />`
 
 Other
 ---
