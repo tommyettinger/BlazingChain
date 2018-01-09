@@ -142,8 +142,8 @@
                             <goal>testCompile</goal>
                         </goals>
                         <configuration>
-                            <source>${jdk.test.version}</source>
-                            <target>${jdk.test.version}</target>
+                            <source>${jdk.version}</source>
+                            <target>${jdk.version}</target>
                         </configuration>
                     </execution>
                 </executions>

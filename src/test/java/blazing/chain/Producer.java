@@ -21,8 +21,8 @@ public class Producer {
             String text = "";
             try {
                 text = new String(Files.readAllBytes(Paths.get(args[0])), "UTF-8");
-                writer = new OutputStreamWriter(
-                        new FileOutputStream(outArg), "UTF-8");
+                writer = new BufferedWriter(new OutputStreamWriter(
+                        new FileOutputStream(outArg), "UTF-8"));
                 text = LZSEncoding.compressToUTF16(text);
                 writer.write(text);
                 System.out.println("Wrote " + text.length() + " characters to " + outArg);
