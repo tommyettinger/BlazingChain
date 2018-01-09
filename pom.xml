@@ -53,8 +53,7 @@
         <maven.resources.version>2.7</maven.resources.version>
         <maven.source.version>2.4</maven.source.version>
         <maven.gpg.version>1.6</maven.gpg.version>
-        <jdk.version>1.6</jdk.version>
-        <jdk.test.version>1.7</jdk.test.version>
+        <jdk.version>1.7</jdk.version>
         <which.test>Producer</which.test>
     </properties>
 
@@ -147,7 +146,8 @@
                             <target>${jdk.test.version}</target>
                         </configuration>
                     </execution>
-                </executions>            </plugin>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
