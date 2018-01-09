@@ -48,12 +48,14 @@
     </distributionManagement>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.version>3.3</maven.compiler.version>
+        <maven.compiler.version>3.6.0</maven.compiler.version>
         <maven.javadoc.version>2.10.3</maven.javadoc.version>
         <maven.resources.version>2.7</maven.resources.version>
         <maven.source.version>2.4</maven.source.version>
         <maven.gpg.version>1.6</maven.gpg.version>
         <jdk.version>1.6</jdk.version>
+        <jdk.test.version>1.7</jdk.test.version>
+        <which.test>Producer</which.test>
     </properties>
 
     <prerequisites>
@@ -90,7 +92,39 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <!--
+            To sign (only needed for Maven Central), add this argument to the mvn command line, just after mvn...
+            -DperformRelease=true
+            -->
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven.gpg.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -101,7 +135,19 @@
                     <source>${jdk.version}</source>
                     <target>${jdk.version}</target>
                 </configuration>
-            </plugin>
+                <executions>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>process-test-sources</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <source>${jdk.test.version}</source>
+                            <target>${jdk.test.version}</target>
+                        </configuration>
+                    </execution>
+                </executions>            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -154,7 +200,7 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <javadocVersion>${jdk.version}</javadocVersion>
                     <links>
-                        <link>http://docs.oracle.com/javase/8/docs/api/</link>
+                        <!--<link>http://docs.oracle.com/javase/8/docs/api/</link>-->
                         <link>http://docs.oracle.com/javase/7/docs/api/</link>
                         <link>http://docs.oracle.com/javase/6/docs/api/</link>
                         <link>http://docs.oracle.com/javase/1.5.0/docs/api/</link>
@@ -162,6 +208,25 @@
                     <linksource>true</linksource>
                     <detectOfflineLinks>false</detectOfflineLinks>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/assembly.xml</descriptor>
+                    </descriptors>
+                    <outputDirectory>${project.build.directory}/${which.test}</outputDirectory>
+                    <archive>
+                        <manifest>
+                            <mainClass>blazing.chain.${which.test}</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <!--
+                <configuration>
+                </configuration>
+                -->
             </plugin>
         </plugins>
     </build>

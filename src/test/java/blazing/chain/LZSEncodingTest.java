@@ -1,3 +1,5 @@
+package blazing.chain;
+
 import static blazing.chain.LZSEncoding.*;
 
 /**

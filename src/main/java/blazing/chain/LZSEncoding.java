@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class LZSEncoding {
+public final class LZSEncoding {
 
     private static final char[] keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".toCharArray(),
             keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$".toCharArray(),
@@ -33,7 +33,7 @@ public class LZSEncoding {
     public static String compressToBase64(String uncompressed) {
         if (uncompressed == null)
             return "";
-        String res = LZSEncoding._compress(uncompressed, 6, keyStrBase64, 0);
+        String res = _compress(uncompressed, 6, keyStrBase64, 0);
         switch (res.length() & 3) { // To produce valid Base64
             default: // When could this happen ?
             case 0:
@@ -60,7 +60,7 @@ public class LZSEncoding {
         final char[] input = compressed.toCharArray();
         // function(index) { return getBaseValue(keyStrBase64,
         // input.charAt(index)); }
-        return LZSEncoding._decompress(input.length, 32, input, valStrBase64, 0);
+        return _decompress(input.length, 32, input, valStrBase64, 0);
     }
 
     /**
@@ -73,7 +73,7 @@ public class LZSEncoding {
     public static String compressToUTF16(String uncompressed) {
         if (uncompressed == null)
             return null;
-        return LZSEncoding._compress(uncompressed, 15, null, 32) + " ";
+        return _compress(uncompressed, 15, null, 32) + " ";
     }
     /**
      * Decompresses a String that had been compressed with {@link #compressToUTF16(String)}.
@@ -86,7 +86,7 @@ public class LZSEncoding {
         if (compressed.isEmpty())
             return "";
         final char[] comp = compressed.toCharArray();
-        return LZSEncoding._decompress(comp.length, 16384, comp, null, -32);
+        return _decompress(comp.length, 16384, comp, null, -32);
     }
 
     /**
@@ -98,7 +98,7 @@ public class LZSEncoding {
     public static String compressToEncodedURIComponent(String uncompressed) {
         if (uncompressed == null)
             return null;
-        return LZSEncoding._compress(uncompressed, 6, keyStrUriSafe, 0) + ' ';
+        return _compress(uncompressed, 6, keyStrUriSafe, 0) + ' ';
     }
     /**
      * Decompresses a String that had been compressed with {@link #compressToEncodedURIComponent(String)}.
@@ -110,7 +110,7 @@ public class LZSEncoding {
         if (compressed.isEmpty()) return "";
         compressed = compressed.replace(' ', '+');
         final char[] input = compressed.toCharArray();
-        return LZSEncoding._decompress(input.length, 32, input, valStrUriSafe, 0);
+        return _decompress(input.length, 32, input, valStrUriSafe, 0);
     }
 
     /**
@@ -120,7 +120,7 @@ public class LZSEncoding {
      * @return the encoded, compressed String
      */
     public static String compress(String uncompressed) {
-        return LZSEncoding._compress(uncompressed, 16, null, 0);
+        return _compress(uncompressed, 16, null, 0);
     }
 
     private static String _compress(String uncompressedStr, int bitsPerChar, char[] getCharFromInt, int offset) {
@@ -337,7 +337,7 @@ public class LZSEncoding {
             return null;
         if (compressed.isEmpty())
             return "";
-        return LZSEncoding._decompress(compressed.length(), 32768, compressed.toCharArray(), null, 0);
+        return _decompress(compressed.length(), 32768, compressed.toCharArray(), null, 0);
     }
 
     private static String _decompress(int length, int resetValue, char[] getNextValue, char[] modify, int offset) {
