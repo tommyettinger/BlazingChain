@@ -17,11 +17,11 @@ public class Consumer {
             arg = args[0];
         }
         String outArg = null;
-        if(args.length > 1)
+        if(args != null && args.length > 1)
             outArg = args[1];
         Writer writer = null;
         try {
-            String text = new String(Files.readAllBytes(Paths.get(arg)), "UTF-8");
+            String text = new String(Files.readAllBytes(Paths.get(arg)), "UTF-16");
             //System.out.println("COMPRESSED:\n");
             //System.out.println(text);
             text = LZSEncoding.decompressFromUTF16(text);

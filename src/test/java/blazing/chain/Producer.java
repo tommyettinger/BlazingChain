@@ -12,7 +12,6 @@ import java.nio.file.Paths;
  */
 public class Producer {
     public static void main(String... args) {
-        args = new String[]{"pom.xml"};
         if (args != null && args.length > 0) {
             String outArg = "compressed.txt";
             if(args.length > 1)
@@ -22,7 +21,7 @@ public class Producer {
             try {
                 text = new String(Files.readAllBytes(Paths.get(args[0])), "UTF-8");
                 writer = new BufferedWriter(new OutputStreamWriter(
-                        new FileOutputStream(outArg), "UTF-8"));
+                        new FileOutputStream(outArg), "UTF-16"));
                 text = LZSEncoding.compressToUTF16(text);
                 writer.write(text);
                 System.out.println("Wrote " + text.length() + " characters to " + outArg);

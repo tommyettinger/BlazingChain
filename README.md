@@ -45,7 +45,11 @@ import blazing.chain.LZSEncoding; // or you can import static , this is all stat
 String longText, compressed, decompressed;
 longText = "This is some long, long, long, long, long, repetitive text!";
 ////These next two lines use the tightest encoding; it can use all of Unicode,
-//// but may produce invalid UTF-16 codepoint pairs.
+//// but may produce invalid UTF-16 codepoint pairs. It should be noted that
+//// invalid pairs can cause a compressed file to be read back incorrectly if
+//// it has made a round-trip to the filesystem saved as UTF-16, UTF-8, or
+//// possibly any encoding other than binary. If you aren't saving the compressed
+//// String as its exact bytes, you should prefer a different pair of methods.
 compressed = LZSEncoding.compress(longText);
 decompressed = LZSEncoding.decompress(compressed);
 ////you can try the next line if you want to make sure they really are equal.
@@ -56,6 +60,8 @@ decompressed = LZSEncoding.decompress(compressed);
 ////This kind of encoding uses 15 of the 16 bits in a UTF-16 char, but should
 //// always produce valid UTF-16. It does not compress quite as well as the first
 //// method, but is compatible with various places that primarily use UTF-16.
+////This is the recommended way of using the library if files are involved.
+////For optimal file size, save files in UTF-16 encoding when compressed this way.
 //compressed = LZSEncoding.compressToUTF16(longText);
 //decompressed = LZSEncoding.decompressFromUTF16(compressed);
 
@@ -86,3 +92,7 @@ Other
 The name is a play on the LZ in Blazing and LZ-String, and Chain being a String-like object, but is also
 a reference to [an obscure, no-longer-canon group](http://starwars.wikia.com/wiki/Blazing_Chain) from
 the distant past of a particular far, far away galaxy.
+
+Included for test purposes is a public domain poem in Finnish (Suomi) called "Tuopa tuopi tuiman tunnon",
+by August Ahlqvist ([retrieved from Wikisource here](https://fi.wikisource.org/wiki/Tuopa_tuopi_tuiman_tunnon)).
+I have no idea what it means, but it mixes ASCII and non-ASCII characters so it serves as good test data.
