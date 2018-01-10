@@ -13,18 +13,40 @@ import java.nio.file.Paths;
 public class Consumer {
     public static void main(String... args) {
         String arg = "compressed.txt";
-        if (args != null && args.length > 0) {
+        if(args == null)
+            args = new String[0];
+        if (args.length > 0) {
             arg = args[0];
         }
         String outArg = null;
-        if(args != null && args.length > 1)
+        if(args.length > 1)
             outArg = args[1];
+        int mode = 1;
+        if(args.length > 2)
+        {
+            if(args[2].contains("B") || args[2].contains("b")) //base64
+                mode = 2;
+            else if(args[2].contains("UR") || args[2].contains("ur")) //uri encoding
+                mode = 3;
+        }
+
         Writer writer = null;
         try {
-            String text = new String(Files.readAllBytes(Paths.get(arg)), "UTF-16");
+            String text = new String(Files.readAllBytes(Paths.get(arg)), mode <= 1 ? "UTF-16" : "UTF-8");
             //System.out.println("COMPRESSED:\n");
             //System.out.println(text);
-            text = LZSEncoding.decompressFromUTF16(text);
+            switch (mode)
+            {
+                case 2:
+                    text = LZSEncoding.decompressFromBase64(text);
+                    break;
+                case 3:
+                    text = LZSEncoding.decompressFromEncodedURIComponent(text);
+                    break;
+                default:
+                    text = LZSEncoding.decompressFromUTF16(text);
+                    break;
+            }
             System.out.println("\nDECOMPRESSED:\n");
             System.out.println(text);
             if (outArg != null) {

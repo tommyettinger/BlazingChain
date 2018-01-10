@@ -36,6 +36,14 @@ original Java code. Javadocs are available in the code and on Maven Central, but
 clear and the API surface is small at 8 methods, half for compression and half for decompression. Some
 small examples (really, really small) are below.
 
+A preview is [available here on github.io](https://tommyettinger.github.io/BlazingChain/index.html),
+which shows the URI-encoding form of compression (mainly because the full range of UTF-16 characters
+used by UTF16 mode couldn't be displayed by most web browsers, so the compressed result would be
+either unreadable or un-copy-able). The preview runs with GWT, but if you have Strings compressed by
+this library using other JVM types (in URI-encoded mode only for now), you can enter the compressed
+Strings on the right and click "<- Decompress" to show their contents at left. You can also enter
+uncompressed text at left and compress it with "Compress ->", writing to the right pane.
+
 Usage
 ---
 
@@ -93,6 +101,11 @@ The name is a play on the LZ in Blazing and LZ-String, and Chain being a String-
 a reference to [an obscure, no-longer-canon group](http://starwars.wikia.com/wiki/Blazing_Chain) from
 the distant past of a particular far, far away galaxy.
 
-Included for test purposes is a public domain poem in Finnish (Suomi) called "Tuopa tuopi tuiman tunnon",
-by August Ahlqvist ([retrieved from Wikisource here](https://fi.wikisource.org/wiki/Tuopa_tuopi_tuiman_tunnon)).
-I have no idea what it means, but it mixes ASCII and non-ASCII characters so it serves as good test data.
+Included for test purposes are a public domain poem in Finnish (Suomi) called "Tuopa tuopi tuiman tunnon",
+by August Ahlqvist ([retrieved from Wikisource here](https://fi.wikisource.org/wiki/Tuopa_tuopi_tuiman_tunnon)),
+and the third paragraph of the public domain novel "A Princess of Mars" by Edgar Rice Burroughs
+([retrieved from Wikisource here](https://en.wikisource.org/wiki/A_Princess_of_Mars/Chapter_I)).
+I have no idea what the poem means, but it mixes ASCII and non-ASCII characters so it serves as good test data.
+Each has versions in uncompressed form as well as compressed with UTF16, URI Encoding, and Base-64 modes.
+The mode corresponding to `compress()` and `uncompress()` is not provided because I don't know how to accurately
+write its invalid UTF-16 codepoints to disk.
