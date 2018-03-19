@@ -9,8 +9,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 
-import static blazing.chain.LZSEncoding.compressToEncodedURIComponent;
-import static blazing.chain.LZSEncoding.decompressFromEncodedURIComponent;
+import static blazing.chain.LZSEncoding.compressToBase64;
+import static blazing.chain.LZSEncoding.decompressFromBase64;
 
 /**
  * Transmission app in pure GWT so users can copy/paste in and out of it.
@@ -43,7 +43,7 @@ public class GwtTransmissionDemo extends GwtBareApp {
         currentText = preferences.getString("normal", "");
         compressedText = preferences.getString("compressed", "");
         if(currentText == null || currentText.isEmpty()) currentText = mars;
-        if(compressedText == null || compressedText.isEmpty()) compressedText = compressToEncodedURIComponent(currentText);
+        if(compressedText == null || compressedText.isEmpty()) compressedText = compressToBase64(currentText);
 
         currentArea = new TextArea();
         currentArea.setText(currentText);
@@ -71,7 +71,7 @@ public class GwtTransmissionDemo extends GwtBareApp {
         compressButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                compressedText = compressToEncodedURIComponent(currentText = currentArea.getText());
+                compressedText = compressToBase64(currentText = currentArea.getText());
                 compressedArea.setText(compressedText);
                 preferences.putString("normal", currentText);
                 preferences.putString("compressed", compressedText);
@@ -86,7 +86,7 @@ public class GwtTransmissionDemo extends GwtBareApp {
         decompressButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                currentText = decompressFromEncodedURIComponent(compressedText = compressedArea.getText());
+                currentText = decompressFromBase64(compressedText = compressedArea.getText());
                 currentArea.setText(currentText);
                 preferences.putString("normal", currentText);
                 preferences.putString("compressed", compressedText);

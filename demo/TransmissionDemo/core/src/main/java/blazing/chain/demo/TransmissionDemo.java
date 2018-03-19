@@ -14,8 +14,7 @@ import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextArea;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 
-import static blazing.chain.LZSEncoding.compressToEncodedURIComponent;
-import static blazing.chain.LZSEncoding.decompressFromEncodedURIComponent;
+import static blazing.chain.LZSEncoding.*;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
@@ -47,8 +46,10 @@ public class TransmissionDemo extends ApplicationAdapter {
         preferences = Gdx.app.getPreferences("blazingchain");
         currentText = preferences.getString("normal", "");
         compressedText = preferences.getString("compressed", "");
-        if(currentText == null || currentText.isEmpty()) currentText = mars;
-        if(compressedText == null || compressedText.isEmpty()) compressedText = compressToEncodedURIComponent(currentText);
+        if(currentText == null || currentText.isEmpty()) 
+            currentText = mars;
+        if(compressedText == null || compressedText.isEmpty())
+            compressedText = compressToBase64(currentText);
         stage = new Stage(new ScreenViewport());
 
         VisTable root = new VisTable();
@@ -72,7 +73,7 @@ public class TransmissionDemo extends ApplicationAdapter {
         compressButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                compressedText = compressToEncodedURIComponent(currentText = currentArea.getText());
+                compressedText = compressToBase64(currentText = currentArea.getText());
                 compressedArea.setText(compressedText);
                 preferences.putString("normal", currentText);
                 preferences.putString("compressed", compressedText);
@@ -92,7 +93,7 @@ public class TransmissionDemo extends ApplicationAdapter {
         decompressButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                currentText = decompressFromEncodedURIComponent(compressedText = compressedArea.getText());
+                currentText = decompressFromBase64(compressedText = compressedArea.getText());
                 currentArea.setText(currentText);
                 preferences.putString("normal", currentText);
                 preferences.putString("compressed", compressedText);

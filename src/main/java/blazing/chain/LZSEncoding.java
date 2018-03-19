@@ -1,9 +1,9 @@
 /*
- * LZString4Java By Rufus Huang 
+ * LZString4Java By Rufus Huang
  * https://github.com/rufushuang/lz-string4java
  * MIT License
- * 
- * Port from original JavaScript version by pieroxy 
+ *
+ * Port from original JavaScript version by pieroxy
  * https://github.com/pieroxy/lz-string
  */
 
@@ -409,8 +409,7 @@ public final class LZSEncoding {
             if (index > length) {
                 return "";
             }
-
-            bits = 0;
+            int cc = 0;
             maxpower = numBits;
             power = 0;
             while (power != maxpower) {
@@ -420,10 +419,9 @@ public final class LZSEncoding {
                     position = resetValue;
                     val = (modify == null) ? (char) (getNextValue[index++] + offset) : modify[getNextValue[index++]];
                 }
-                bits |= (resb > 0 ? 1 : 0) << power++;
+                cc |= (resb > 0 ? 1 : 0) << power++;
             }
-            int cc;
-            switch (cc = bits) {
+            switch (cc) {
                 case 0:
                     bits = 0;
                     maxpower = 8;
