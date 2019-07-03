@@ -133,7 +133,7 @@ public final class LZSEncoding {
         ii,
         getCharFromInt;
     if(mapping == null) {
-        getCharFromInt = function(a){ return a + offset; };
+        getCharFromInt = function(a){ return String.fromCharCode(a + offset); };
     }
     else
     {
@@ -203,7 +203,7 @@ public final class LZSEncoding {
           }
           context_enlargeIn--;
           if (context_enlargeIn == 0) {
-            context_enlargeIn = Math.pow(2, context_numBits);
+            context_enlargeIn = (1 << context_numBits);
             context_numBits++;
           }
           delete context_dictionaryToCreate[context_w];
@@ -225,7 +225,7 @@ public final class LZSEncoding {
         }
         context_enlargeIn--;
         if (context_enlargeIn == 0) {
-          context_enlargeIn = Math.pow(2, context_numBits);
+          context_enlargeIn = (1 << context_numBits);
           context_numBits++;
         }
         // Add wc to the dictionary.
@@ -288,7 +288,7 @@ public final class LZSEncoding {
         }
         context_enlargeIn--;
         if (context_enlargeIn == 0) {
-          context_enlargeIn = Math.pow(2, context_numBits);
+          context_enlargeIn = (1 << context_numBits);
           context_numBits++;
         }
         delete context_dictionaryToCreate[context_w];
@@ -310,7 +310,7 @@ public final class LZSEncoding {
       }
       context_enlargeIn--;
       if (context_enlargeIn == 0) {
-        context_enlargeIn = Math.pow(2, context_numBits);
+        context_enlargeIn = (1 << context_numBits);
         context_numBits++;
       }
     }
@@ -368,7 +368,7 @@ public final class LZSEncoding {
         c,
         getNextValue;
     if(modify == null){
-        getNextValue = function(index) { return comp.charCodeAt(index) - offset; };
+        getNextValue = function(index) { return comp.charCodeAt(index) + offset; };
     }
     else {
         getNextValue = function(index) { return modify.charCodeAt(comp.charCodeAt(index)); };
@@ -380,7 +380,7 @@ public final class LZSEncoding {
     }
 
     bits = 0;
-    maxpower = Math.pow(2,2);
+    maxpower = 4;
     power=1;
     while (power!=maxpower) {
       resb = data.val & data.position;
@@ -396,7 +396,7 @@ public final class LZSEncoding {
     switch (next = bits) {
       case 0:
           bits = 0;
-          maxpower = Math.pow(2,8);
+          maxpower = 256;
           power=1;
           while (power!=maxpower) {
             resb = data.val & data.position;
@@ -412,7 +412,7 @@ public final class LZSEncoding {
         break;
       case 1:
           bits = 0;
-          maxpower = Math.pow(2,16);
+          maxpower = 65536;
           power=1;
           while (power!=maxpower) {
             resb = data.val & data.position;
@@ -438,7 +438,7 @@ public final class LZSEncoding {
       }
 
       bits = 0;
-      maxpower = Math.pow(2,numBits);
+      maxpower = (1 << numBits);
       power=1;
       while (power!=maxpower) {
         resb = data.val & data.position;
@@ -454,7 +454,7 @@ public final class LZSEncoding {
       switch (c = bits) {
         case 0:
           bits = 0;
-          maxpower = Math.pow(2,8);
+          maxpower = 256;
           power=1;
           while (power!=maxpower) {
             resb = data.val & data.position;
@@ -473,7 +473,7 @@ public final class LZSEncoding {
           break;
         case 1:
           bits = 0;
-          maxpower = Math.pow(2,16);
+          maxpower = 65536;
           power=1;
           while (power!=maxpower) {
             resb = data.val & data.position;
@@ -482,7 +482,7 @@ public final class LZSEncoding {
               data.position = resetValue;
               data.val = getNextValue(data.index++);
             }
-            bits |= (resb>0 ? 1 : 0) * power;
+            bits |= (resb > 0 ? power : 0);
             power <<= 1;
           }
           dictionary[dictSize++] = String.fromCharCode(bits);
@@ -494,7 +494,7 @@ public final class LZSEncoding {
       }
 
       if (enlargeIn == 0) {
-        enlargeIn = Math.pow(2, numBits);
+        enlargeIn = (1 << numBits);
         numBits++;
       }
 
@@ -516,7 +516,7 @@ public final class LZSEncoding {
       w = entry;
 
       if (enlargeIn == 0) {
-        enlargeIn = Math.pow(2, numBits);
+        enlargeIn = (1 << numBits);
         numBits++;
       }
     }

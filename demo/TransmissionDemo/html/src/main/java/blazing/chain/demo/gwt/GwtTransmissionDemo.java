@@ -1,5 +1,6 @@
 package blazing.chain.demo.gwt;
 
+import blazing.chain.LZSEncodingOriginal;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
@@ -9,8 +10,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 
-import static blazing.chain.LZSEncoding.compressToBase64;
-import static blazing.chain.LZSEncoding.decompressFromBase64;
+import static blazing.chain.LZSEncoding.*;
 
 /**
  * Transmission app in pure GWT so users can copy/paste in and out of it.
@@ -21,6 +21,7 @@ public class GwtTransmissionDemo extends GwtBareApp {
     public TextArea currentArea, compressedArea;
     public Preferences preferences;
     public String compressedText, currentText;
+    public Label timeTaken;
     public static final String
             mars =  "I have never told this story, nor shall mortal man see this manuscript until after I have passed\n" +
             "over for eternity. I know that the average human mind will not believe what it cannot grasp, and so\n" +
@@ -62,8 +63,11 @@ public class GwtTransmissionDemo extends GwtBareApp {
         texts.add(currentArea);
         texts.add(compressedArea);
         root.add(texts);
+        
+        timeTaken = new Label("");
 
         HorizontalPanel buttonRow = new HorizontalPanel();
+        HorizontalPanel buttonRow2 = new HorizontalPanel();
         final PushButton compressButton = new PushButton("Compress ->", "Compress ->");
         compressButton.setSize("300px", "28px");
         compressButton.setText("Compress ->");
@@ -71,7 +75,9 @@ public class GwtTransmissionDemo extends GwtBareApp {
         compressButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                compressedText = compressToBase64(currentText = currentArea.getText());
+                long currentTime = System.currentTimeMillis();
+                compressedText = compressToUTF16(currentText = currentArea.getText());
+                timeTaken.setText("Took " + (System.currentTimeMillis() - currentTime) + " to compress");
                 compressedArea.setText(compressedText);
                 preferences.putString("normal", currentText);
                 preferences.putString("compressed", compressedText);
@@ -86,7 +92,9 @@ public class GwtTransmissionDemo extends GwtBareApp {
         decompressButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                currentText = decompressFromBase64(compressedText = compressedArea.getText());
+                long currentTime = System.currentTimeMillis();
+                currentText = decompressFromUTF16(compressedText = compressedArea.getText());
+                timeTaken.setText("Took " + (System.currentTimeMillis() - currentTime) + " to decompress");
                 currentArea.setText(currentText);
                 preferences.putString("normal", currentText);
                 preferences.putString("compressed", compressedText);
@@ -94,9 +102,62 @@ public class GwtTransmissionDemo extends GwtBareApp {
             }
         });
         buttonRow.add(decompressButton);
+        final PushButton compressButtonOld = new PushButton("Compress ??", "Compress ??");
+        compressButtonOld.setSize("300px", "28px");
+        compressButtonOld.setText("Compress ??");
+        compressButtonOld.setEnabled(true);
+        compressButtonOld.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                long currentTime = System.currentTimeMillis();
+                compressedText = LZSEncodingOriginal.compressToUTF16(currentText = currentArea.getText());
+                timeTaken.setText("Took " + (System.currentTimeMillis() - currentTime) + " to compress");
+                compressedArea.setText(compressedText);
+                preferences.putString("normal", currentText);
+                preferences.putString("compressed", compressedText);
+                preferences.flush();
+            }
+        });
+        buttonRow2.add(compressButtonOld);
+        final PushButton decompressButtonOld = new PushButton("?? Decompress", "?? Decompress");
+        decompressButtonOld.setSize("300px", "28px");
+        decompressButtonOld.setText("?? Decompress");
+        decompressButtonOld.setEnabled(true);
+        decompressButtonOld.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                long currentTime = System.currentTimeMillis();
+                currentText = LZSEncodingOriginal.decompressFromUTF16(compressedText = compressedArea.getText());
+                timeTaken.setText("Took " + (System.currentTimeMillis() - currentTime) + " to decompress");
+                currentArea.setText(currentText);
+                preferences.putString("normal", currentText);
+                preferences.putString("compressed", compressedText);
+                preferences.flush();
+            }
+        });
+        buttonRow2.add(decompressButtonOld);
+
+        final PushButton marsButton = new PushButton("Mars", "MARS");
+        marsButton.setSize("300px", "28px");
+        marsButton.setText("Mars");
+        marsButton.setEnabled(true);
+        marsButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                currentText = mars;
+                currentArea.setText(currentText);
+            }
+        });
+        buttonRow2.add(marsButton);
         RootPanel.get().sinkEvents(Event.ONCLICK); //Event.ONCHANGE |
         buttonRow.setWidth("1000px");
+        buttonRow2.setWidth("1000px");
         buttonRow.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+        buttonRow2.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+//        root.add(buttonRow);
+        timeTaken.setSize("600px", "30px");
         RootPanel.get("embed-html").add(buttonRow);
+        RootPanel.get("embed-html").add(buttonRow2);
+        root.add(timeTaken);
     }
 }
