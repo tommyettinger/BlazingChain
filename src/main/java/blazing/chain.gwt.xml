@@ -6,4 +6,5 @@
   -->
 <module>
 	<source path="chain" />
+	<super-source path="chain/emu" />
 </module>
