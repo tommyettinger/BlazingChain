@@ -1,1 +1,1 @@
-include 'desktop', 'core', 'gwt'
+include 'core', 'lwjgl3', 'html'
