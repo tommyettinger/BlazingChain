@@ -408,7 +408,7 @@ public final class LZSEncoding {
             bits |= (resb>0 ? 1 : 0) * power;
             power <<= 1;
           }
-        c = f(bits);
+        c = String.fromCharCode(bits);
         break;
       case 1:
           bits = 0;
@@ -424,7 +424,7 @@ public final class LZSEncoding {
             bits |= (resb>0 ? 1 : 0) * power;
             power <<= 1;
           }
-        c = f(bits);
+        c = String.fromCharCode(bits);
         break;
       case 2:
         return "";
@@ -467,7 +467,7 @@ public final class LZSEncoding {
             power <<= 1;
           }
 
-          dictionary[dictSize++] = f(bits);
+          dictionary[dictSize++] = String.fromCharCode(bits);
           c = dictSize-1;
           enlargeIn--;
           break;
@@ -485,7 +485,7 @@ public final class LZSEncoding {
             bits |= (resb>0 ? 1 : 0) * power;
             power <<= 1;
           }
-          dictionary[dictSize++] = f(bits);
+          dictionary[dictSize++] = String.fromCharCode(bits);
           c = dictSize-1;
           enlargeIn--;
           break;
