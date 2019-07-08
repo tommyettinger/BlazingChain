@@ -15,6 +15,7 @@ import java.util.HashSet;
 
 public final class LZSEncoding {
 
+    private LZSEncoding() {};
     private static final char[] keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".toCharArray(),
             keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$".toCharArray(),
             valStrBase64 = new char[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -32,7 +33,7 @@ public final class LZSEncoding {
      */
     public static String compressToBase64(String uncompressed) {
         if (uncompressed == null)
-            return "";
+            return null;
         String res = _compress(uncompressed, 6, keyStrBase64, 0);
         switch (res.length() & 3) { // To produce valid Base64
             default: // When could this happen ?
@@ -58,8 +59,6 @@ public final class LZSEncoding {
         if (compressed.isEmpty())
             return "";
         final char[] input = compressed.toCharArray();
-        // function(index) { return getBaseValue(keyStrBase64,
-        // input.charAt(index)); }
         return _decompress(input.length, 32, input, valStrBase64, 0);
     }
 
@@ -98,7 +97,7 @@ public final class LZSEncoding {
     public static String compressToEncodedURIComponent(String uncompressed) {
         if (uncompressed == null)
             return null;
-        return _compress(uncompressed, 6, keyStrUriSafe, 0) + ' ';
+        return _compress(uncompressed, 6, keyStrUriSafe, 0) + '+';
     }
     /**
      * Decompresses a String that had been compressed with {@link #compressToEncodedURIComponent(String)}.
@@ -108,7 +107,6 @@ public final class LZSEncoding {
     public static String decompressFromEncodedURIComponent(String compressed) {
         if (compressed == null) return null;
         if (compressed.isEmpty()) return "";
-        compressed = compressed.replace(' ', '+');
         final char[] input = compressed.toCharArray();
         return _decompress(input.length, 32, input, valStrUriSafe, 0);
     }
