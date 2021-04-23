@@ -23,7 +23,7 @@ that does especially well at compressing repetitive data in the .7z archive form
 heavy-weight arithmetic coding techniques, which may do better on file size, .7z with the LZMA algorithm
 was the only format I found that could compress a 13GB folder of immensely-repetitive data down to about
 60 MB, though less common and similar formats like .xz and .lz also use the same or similar algorithm).
-Any patents on LZW seem to have expired and it is common in various software.
+Any patents on LZW seem to have expired, and it is common in various software.
 
 This particular version of LZ-String encoding has been optimized on top of rufushuang's optimizations,
 removing all boxing of char primitives, almost all boxing of int primitives (only to allow usage of
@@ -33,8 +33,8 @@ earlier approach of making an ArrayList of boxed Characters, appending to that, 
 each Character to another StringBuilder. If premature optimization is the root of all evil, I need an
 exorcist, but thankfully the code is small enough that not too much extra work was needed in the
 original Java code. Javadocs are available in the code and on Maven Central, but the method names are
-clear and the API surface is small at 8 methods, half for compression and half for decompression. Some
-small examples (really, really small) are below.
+clear, and the API surface is small at 8 methods, half for compression and half for decompression. Some
+small examples (really, really, small) are below.
 
 A preview is [available here on github.io](https://tommyettinger.github.io/BlazingChain/index.html),
 which shows the URI-encoding form of compression (mainly because the full range of UTF-16 characters
@@ -88,7 +88,7 @@ Installation
 ---
 
 You can get this version (which should be compatible with lz-string 1.4.4)
-[using this info on Maven Central](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cblazingchain%7C1.4.4.2%7Cjar).
+[using this info on Maven Central](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cblazingchain%7C1.4.4.3%7Cjar).
 That page provides dependency info for many build tools including Maven, Gradle, Ivy, SBT, and Lein.
 There should be a release on GitHub as well. For GWT, you will need this inherits line:
 
