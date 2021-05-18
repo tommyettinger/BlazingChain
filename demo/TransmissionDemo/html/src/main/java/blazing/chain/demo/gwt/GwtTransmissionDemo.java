@@ -102,40 +102,40 @@ public class GwtTransmissionDemo extends GwtBareApp {
             }
         });
         buttonRow.add(decompressButton);
-        final PushButton compressButtonOld = new PushButton("Compress ??", "Compress ??");
-        compressButtonOld.setSize("300px", "28px");
-        compressButtonOld.setText("Compress ??");
-        compressButtonOld.setEnabled(true);
-        compressButtonOld.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                long currentTime = System.currentTimeMillis();
-                compressedText = LZSEncodingOriginal.compressToUTF16(currentText = currentArea.getText());
-                timeTaken.setText("Took " + (System.currentTimeMillis() - currentTime) + " to compress");
-                compressedArea.setText(compressedText);
-                preferences.putString("normal", currentText);
-                preferences.putString("compressed", compressedText);
-                preferences.flush();
-            }
-        });
-        buttonRow2.add(compressButtonOld);
-        final PushButton decompressButtonOld = new PushButton("?? Decompress", "?? Decompress");
-        decompressButtonOld.setSize("300px", "28px");
-        decompressButtonOld.setText("?? Decompress");
-        decompressButtonOld.setEnabled(true);
-        decompressButtonOld.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                long currentTime = System.currentTimeMillis();
-                currentText = LZSEncodingOriginal.decompressFromUTF16(compressedText = compressedArea.getText());
-                timeTaken.setText("Took " + (System.currentTimeMillis() - currentTime) + " to decompress");
-                currentArea.setText(currentText);
-                preferences.putString("normal", currentText);
-                preferences.putString("compressed", compressedText);
-                preferences.flush();
-            }
-        });
-        buttonRow2.add(decompressButtonOld);
+//        final PushButton compressButtonOld = new PushButton("Compress ??", "Compress ??");
+//        compressButtonOld.setSize("300px", "28px");
+//        compressButtonOld.setText("Compress ??");
+//        compressButtonOld.setEnabled(true);
+//        compressButtonOld.addClickHandler(new ClickHandler() {
+//            @Override
+//            public void onClick(ClickEvent event) {
+//                long currentTime = System.currentTimeMillis();
+//                compressedText = LZSEncodingOriginal.compressToUTF16(currentText = currentArea.getText());
+//                timeTaken.setText("Took " + (System.currentTimeMillis() - currentTime) + " to compress");
+//                compressedArea.setText(compressedText);
+//                preferences.putString("normal", currentText);
+//                preferences.putString("compressed", compressedText);
+//                preferences.flush();
+//            }
+//        });
+//        buttonRow2.add(compressButtonOld);
+//        final PushButton decompressButtonOld = new PushButton("?? Decompress", "?? Decompress");
+//        decompressButtonOld.setSize("300px", "28px");
+//        decompressButtonOld.setText("?? Decompress");
+//        decompressButtonOld.setEnabled(true);
+//        decompressButtonOld.addClickHandler(new ClickHandler() {
+//            @Override
+//            public void onClick(ClickEvent event) {
+//                long currentTime = System.currentTimeMillis();
+//                currentText = LZSEncodingOriginal.decompressFromUTF16(compressedText = compressedArea.getText());
+//                timeTaken.setText("Took " + (System.currentTimeMillis() - currentTime) + " to decompress");
+//                currentArea.setText(currentText);
+//                preferences.putString("normal", currentText);
+//                preferences.putString("compressed", compressedText);
+//                preferences.flush();
+//            }
+//        });
+//        buttonRow2.add(decompressButtonOld);
 
         final PushButton marsButton = new PushButton("Mars", "MARS");
         marsButton.setSize("300px", "28px");
@@ -148,7 +148,19 @@ public class GwtTransmissionDemo extends GwtBareApp {
                 currentArea.setText(currentText);
             }
         });
-        buttonRow2.add(marsButton);
+
+        final PushButton loadButton = new PushButton("Load Existing", "Load Existing");
+        loadButton.setSize("300px", "28px");
+        loadButton.setText("Load Existing");
+        loadButton.setEnabled(true);
+        loadButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                compressedText = Gdx.files.internal("PrincessOfMarsUTF16.txt").readString("UTF8");
+                compressedArea.setText(compressedText);
+            }
+        });
+        buttonRow2.add(loadButton);
         RootPanel.get().sinkEvents(Event.ONCLICK); //Event.ONCHANGE |
         buttonRow.setWidth("1000px");
         buttonRow2.setWidth("1000px");

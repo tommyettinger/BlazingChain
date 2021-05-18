@@ -3,6 +3,7 @@ package blazing.chain.demo;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.VisUI.SkinScale;
+import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextArea;
 import com.kotcrab.vis.ui.widget.VisTextButton;
@@ -22,6 +24,7 @@ import static blazing.chain.LZSEncoding.*;
 public class TransmissionDemo extends ApplicationAdapter {
     private Stage stage;
     public VisTextArea currentArea, compressedArea;
+    public VisLabel allGood;
     public Copier copier;
     public Preferences preferences;
     public TransmissionDemo(Copier cop)
@@ -49,7 +52,7 @@ public class TransmissionDemo extends ApplicationAdapter {
         if(currentText == null || currentText.isEmpty()) 
             currentText = mars;
         if(compressedText == null || compressedText.isEmpty())
-            compressedText = compressToBase64(currentText);
+            compressedText = compressToUTF16(currentText);
         stage = new Stage(new ScreenViewport());
 
         VisTable root = new VisTable();
@@ -57,10 +60,12 @@ public class TransmissionDemo extends ApplicationAdapter {
         stage.addActor(root);
 
         currentArea = new VisTextArea(currentText);
+        currentArea.setOnlyFontChars(false);
         currentArea.setPrefRows(16);
         currentArea.setWidth(460);
         currentArea.setHeight(450);
         compressedArea = new VisTextArea();
+        compressedArea.setOnlyFontChars(false);
         compressedArea.setPrefRows(16);
         compressedArea.setWidth(460);
         compressedArea.setHeight(450);
@@ -73,7 +78,7 @@ public class TransmissionDemo extends ApplicationAdapter {
         compressButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                compressedText = compressToBase64(currentText = currentArea.getText());
+                compressedText = compressToUTF16(currentText = currentArea.getText());
                 compressedArea.setText(compressedText);
                 preferences.putString("normal", currentText);
                 preferences.putString("compressed", compressedText);
@@ -93,8 +98,16 @@ public class TransmissionDemo extends ApplicationAdapter {
         decompressButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                currentText = decompressFromBase64(compressedText = compressedArea.getText());
+                currentText = decompressFromUTF16(compressedText = compressedArea.getText());
                 currentArea.setText(currentText);
+                if(compressToUTF16(currentText).equals(compressedText)) {
+                    allGood.setText("All Good!");
+                    allGood.setColor(Color.GREEN);
+                }
+                else{
+                    allGood.setText("No Match!");
+                    allGood.setColor(Color.RED);
+                }
                 preferences.putString("normal", currentText);
                 preferences.putString("compressed", compressedText);
                 preferences.flush();
@@ -108,7 +121,29 @@ public class TransmissionDemo extends ApplicationAdapter {
             }
         });
 
-        root.add(decompressButton).pad(10);
+        root.add(decompressButton).pad(10).row();
+
+        VisTextButton loadUtf16 = new VisTextButton("Load decompressed text", new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                currentText = mars;
+                currentArea.setText(currentText);
+                compressedText = Gdx.files.internal("PrincessOfMarsUTF16.txt").readString("UTF16");
+                compressedArea.setText(compressedText);
+                if(decompressFromUTF16(compressedText).equals(currentText)){
+                        allGood.setText("All Good!");
+                        allGood.setColor(Color.GREEN);
+                }
+                else {
+                    allGood.setText("No Match!");
+                    allGood.setColor(Color.RED);
+                }
+            }
+        });
+        root.add(loadUtf16).pad(10).row();
+
+        allGood = new VisLabel("All Good!", Color.GREEN);
+        root.add(allGood).pad(10);
         root.pack();
         Gdx.input.setInputProcessor(stage);
     }

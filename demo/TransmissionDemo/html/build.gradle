@@ -1,6 +1,15 @@
-
+buildscript {
+	repositories {
+		mavenCentral()
+		maven { url 'https://jitpack.io' }
+	}
+	dependencies {
+		classpath "com.github.tommyettinger.gretty:gretty:3.0.4.5"
+	}
+}
 apply plugin: "gwt"
 apply plugin: "war"
+apply plugin: "org.gretty"
 
 gwt {
 	gwtVersion = "$gwtFrameworkVersion" // Should match the version used for building the GWT backend. See gradle.properties.
@@ -16,27 +25,6 @@ gwt {
 	compiler.disableCastChecking = true
 }
 
-import org.wisepersist.gradle.plugins.gwt.GwtSuperDev
-
-def HttpFileServer server = null
-def httpFilePort = 8080
-task startHttpServer () {
-	dependsOn draftCompileGwt
-	String output = project.buildDir.path + "/gwt/draftOut"
-	doLast {
-		copy {
-			from "webapp"
-			into output
-		}
-		copy {
-			from "war"
-			into output
-		}
-		server = new SimpleHttpFileServerFactory().start(new File(output), httpFilePort)
-		println "Server started in directory " + server.getContentRoot() + ", http://localhost:" + server.getPort() + "/index.html"
-	}
-}
-
 dependencies {
 	api "com.badlogicgames.gdx:gdx:$gdxVersion"
 	api "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
@@ -47,15 +35,45 @@ dependencies {
 
 }
 
-task superDev(type: GwtSuperDev) {
-		dependsOn startHttpServer
-		doFirst {
-				gwt.modules = gwt.devModules
+import org.akhikhl.gretty.AppBeforeIntegrationTestTask
+import org.wisepersist.gradle.plugins.gwt.GwtSuperDev
+
+gretty.httpPort = 8080
+gretty.resourceBase = project.buildDir.path + "/gwt/draftOut"
+gretty.contextPath = "/"
+gretty.portPropertiesFileName = "TEMP_PORTS.properties"
+
+task startHttpServer (dependsOn: [draftCompileGwt]) {
+	doFirst {
+		copy {
+			from "webapp"
+			into gretty.resourceBase
 		}
+		copy {
+			from "war"
+			into gretty.resourceBase
+		}
+	}
+}
+task beforeRun(type: AppBeforeIntegrationTestTask, dependsOn: startHttpServer) {
+	// The next line allows ports to be reused instead of
+	// needing a process to be manually terminated.
+	file("build/TEMP_PORTS.properties").delete()
+	// Somewhat of a hack; uses Gretty's support for wrapping a task in
+	// a start and then stop of a Jetty server that serves files while
+	// also running the SuperDev code server.
+	integrationTestTask 'superDev'
+
+	interactive false
 }
 
+task superDev(type: GwtSuperDev) {
+	doFirst {
+		gwt.modules = gwt.devModules
+	}
+}
 task dist(dependsOn: [clean, compileGwt]) {
-    doLast {
+	doLast {
 		file("build/dist").mkdirs()
 		copy {
 			from "build/gwt/out"
@@ -64,24 +82,26 @@ task dist(dependsOn: [clean, compileGwt]) {
 		copy {
 			from "webapp"
 			into "build/dist"
-			}
+		}
 		copy {
 			from "war"
 			into "build/dist"
 		}
 	}
 }
+
 task addSource {
-//	doLast {
-//		sourceSets.main.compileClasspath += files(project(':core').sourceSets.main.allJava.srcDirs)
-//
-//	}
+	doLast {
+		sourceSets.main.compileClasspath += files(project(':html').sourceSets.main.allJava.srcDirs)
+	}
 }
 
+tasks.checkGwt.dependsOn(addSource)
+checkGwt.war = file("war")
 tasks.compileGwt.dependsOn(addSource)
 tasks.draftCompileGwt.dependsOn(addSource)
 
-sourceCompatibility = 1.7
+sourceCompatibility = 8.0
 sourceSets.main.java.srcDirs = [ "src/main/java/" ]
 
 eclipse.project.name = appName + "-html"

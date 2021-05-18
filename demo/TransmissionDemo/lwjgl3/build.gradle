@@ -3,7 +3,7 @@ apply plugin: 'application'
 sourceSets.main.resources.srcDirs += [ rootProject.file('assets').path ]
 mainClassName = 'blazing.chain.demo.lwjgl3.Lwjgl3Launcher'
 eclipse.project.name = appName + '-lwjgl3'
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 
 dependencies {
 	api project(':core')
@@ -17,17 +17,31 @@ import org.gradle.internal.os.OperatingSystem
 run {
 	workingDir = rootProject.file('assets').path
 	setIgnoreExitValue(true)
-	
+
 	if (OperatingSystem.current() == OperatingSystem.MAC_OS) {
 		// Required to run LWJGL3 Java apps on MacOS
 		jvmArgs += "-XstartOnFirstThread"
 	}
 }
+
 jar {
-	archiveFileName = "${appName}-${version}.jar"
-	from files(sourceSets.main.output.classesDirs)
-	from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } } 
+// sets the name of the .jar file this produces to the name of the game or app.
+	archiveBaseName.set(appName)
+// the duplicatesStrategy will matter starting in Gradle 7.0; this setting works.
+	duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+	dependsOn configurations.runtimeClasspath
+	from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+// these "exclude" lines remove some unnecessary duplicate files in the output JAR.
+	exclude('META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA')
+	dependencies {
+		exclude('META-INF/INDEX.LIST', 'META-INF/maven/**')
+	}
+// setting the manifest makes the JAR runnable.
 	manifest {
 		attributes 'Main-Class': project.mainClassName
+	}
+// this last step may help on some OSes that need extra instruction to make runnable JARs.
+	doLast {
+		file(archiveFile).setExecutable(true, false)
 	}
 }
