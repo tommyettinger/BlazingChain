@@ -1,16 +1,10 @@
 package blazing.chain.demo.gwt;
 
-import blazing.chain.LZSEncodingOriginal;
 import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.ApplicationLogger;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import com.badlogic.gdx.backends.gwt.GwtApplicationLogger;
-import com.badlogic.gdx.backends.gwt.GwtBareApp;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Event;
