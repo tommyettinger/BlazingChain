@@ -52,7 +52,14 @@ public class TransmissionDemo extends ApplicationAdapter {
         if(currentText == null || currentText.isEmpty()) 
             currentText = mars;
         if(compressedText == null || compressedText.isEmpty())
+        {
             compressedText = compressToUTF16(currentText);
+        }
+        int[] ic = LZIntEncoding.compressToInts(currentText);
+        System.out.println(LZIntEncoding.join(ic));
+        System.out.println();
+        System.out.println(LZIntEncoding.decompressFromInts(ic));
+
         stage = new Stage(new ScreenViewport());
 
         VisTable root = new VisTable();
