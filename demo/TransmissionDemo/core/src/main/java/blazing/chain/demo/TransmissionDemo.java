@@ -55,10 +55,10 @@ public class TransmissionDemo extends ApplicationAdapter {
         {
             compressedText = compressToUTF16(currentText);
         }
-        int[] ic = LZIntEncoding.compressToInts(currentText);
-        System.out.println(LZIntEncoding.join(ic));
+        byte[] bc = LZByteEncoding.compressToBytes(currentText);
+        System.out.println(LZByteEncoding.join(bc));
         System.out.println();
-        System.out.println(LZIntEncoding.decompressFromInts(ic));
+        System.out.println(LZByteEncoding.decompressFromBytes(bc));
 
         stage = new Stage(new ScreenViewport());
 
