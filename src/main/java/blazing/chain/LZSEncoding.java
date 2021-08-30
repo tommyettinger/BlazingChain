@@ -34,7 +34,7 @@ public final class LZSEncoding {
     public static String compressToBase64(String uncompressed) {
         if (uncompressed == null)
             return null;
-        String res = _compress(uncompressed, 6, keyStrBase64, 0);
+        String res = _compress(uncompressed, 6, keyStrBase64);
         switch (res.length() & 3) { // To produce valid Base64
             default: // When could this happen ?
             case 0:
@@ -56,10 +56,9 @@ public final class LZSEncoding {
     public static String decompressFromBase64(String compressed) {
         if (compressed == null)
             return null;
-        if (compressed.isEmpty())
+        if (compressed.length() == 0)
             return "";
-        final char[] input = compressed.toCharArray();
-        return _decompress(input.length, 32, input, valStrBase64, 0);
+        return _decompress(compressed.length(), compressed, valStrBase64);
     }
 
     /**
@@ -72,7 +71,7 @@ public final class LZSEncoding {
     public static String compressToUTF16(String uncompressed) {
         if (uncompressed == null)
             return null;
-        return _compress(uncompressed, 15, null, 32) + " ";
+        return _compress(uncompressed, 15, 32) + " ";
     }
     /**
      * Decompresses a String that had been compressed with {@link #compressToUTF16(String)}.
@@ -82,10 +81,9 @@ public final class LZSEncoding {
     public static String decompressFromUTF16(String compressed) {
         if (compressed == null)
             return null;
-        if (compressed.isEmpty())
+        if (compressed.length() == 0)
             return "";
-        final char[] comp = compressed.toCharArray();
-        return _decompress(comp.length, 16384, comp, null, -32);
+        return _decompress(compressed.length(), 16384, compressed, -32);
     }
 
     /**
@@ -97,7 +95,7 @@ public final class LZSEncoding {
     public static String compressToEncodedURIComponent(String uncompressed) {
         if (uncompressed == null)
             return null;
-        return _compress(uncompressed, 6, keyStrUriSafe, 0);
+        return _compress(uncompressed, 6, keyStrUriSafe);
     }
     /**
      * Decompresses a String that had been compressed with {@link #compressToEncodedURIComponent(String)}.
@@ -106,9 +104,8 @@ public final class LZSEncoding {
      */
     public static String decompressFromEncodedURIComponent(String compressed) {
         if (compressed == null) return null;
-        if (compressed.isEmpty()) return "";
-        final char[] input = compressed.toCharArray();
-        return _decompress(input.length, 32, input, valStrUriSafe, 0);
+        if (compressed.length() == 0) return "";
+        return _decompress(compressed.length(), compressed, valStrUriSafe);
     }
 
     /**
@@ -118,15 +115,15 @@ public final class LZSEncoding {
      * @return the encoded, compressed String
      */
     public static String compress(String uncompressed) {
-        return _compress(uncompressed, 16, null, 0);
+        return _compress(uncompressed, 16, 0);
     }
 
-    private static String _compress(String uncompressedStr, int bitsPerChar, char[] getCharFromInt, int offset) {
+    private static String _compress(String uncompressedStr, int bitsPerChar, char[] getCharFromInt) {
         if (uncompressedStr == null) return null;
         if (uncompressedStr.isEmpty()) return "";
         int i, value;
-        HashMap<String, Integer> context_dictionary = new HashMap<String, Integer>();
-        HashSet<String> context_dictionaryToCreate = new HashSet<String>();
+        HashMap<String, Integer> context_dictionary = new HashMap<>();
+        HashSet<String> context_dictionaryToCreate = new HashSet<>();
         String context_c;
         String context_wc;
         String context_w = "";
@@ -138,9 +135,9 @@ public final class LZSEncoding {
         int context_data_position = 0;
         int ii;
 
-        char[] uncompressed = uncompressedStr.toCharArray();
-        for (ii = 0; ii < uncompressed.length; ii++) {
-            context_c = String.valueOf(uncompressed[ii]);
+        int uncompressedLength = uncompressedStr.length();
+        for (ii = 0; ii < uncompressedLength; ii++) {
+            context_c = String.valueOf(uncompressedStr.charAt(ii));
             if (!context_dictionary.containsKey(context_c)) {
                 context_dictionary.put(context_c, context_dictSize++);
                 context_dictionaryToCreate.add(context_c);
@@ -156,7 +153,7 @@ public final class LZSEncoding {
                             context_data_val = (context_data_val << 1);
                             if (context_data_position == bitsPerChar - 1) {
                                 context_data_position = 0;
-                                context_data.append((char) (((getCharFromInt == null) ? context_data_val : getCharFromInt[context_data_val]) + offset));
+                                context_data.append(getCharFromInt[context_data_val]);
                                 context_data_val = 0;
                             } else {
                                 context_data_position++;
@@ -166,7 +163,7 @@ public final class LZSEncoding {
                             context_data_val = (context_data_val << 1) | (value & 1);
                             if (context_data_position == bitsPerChar - 1) {
                                 context_data_position = 0;
-                                context_data.append((char) (((getCharFromInt == null) ? context_data_val : getCharFromInt[context_data_val]) + offset));
+                                context_data.append(getCharFromInt[context_data_val]);
                                 context_data_val = 0;
                             } else {
                                 context_data_position++;
@@ -179,7 +176,7 @@ public final class LZSEncoding {
                             context_data_val = (context_data_val << 1) | value;
                             if (context_data_position == bitsPerChar - 1) {
                                 context_data_position = 0;
-                                context_data.append((char) (((getCharFromInt == null) ? context_data_val : getCharFromInt[context_data_val]) + offset));
+                                context_data.append(getCharFromInt[context_data_val]);
                                 context_data_val = 0;
                             } else {
                                 context_data_position++;
@@ -191,7 +188,7 @@ public final class LZSEncoding {
                             context_data_val = (context_data_val << 1) | (value & 1);
                             if (context_data_position == bitsPerChar - 1) {
                                 context_data_position = 0;
-                                context_data.append((char) (((getCharFromInt == null) ? context_data_val : getCharFromInt[context_data_val]) + offset));
+                                context_data.append(getCharFromInt[context_data_val]);
                                 context_data_val = 0;
                             } else {
                                 context_data_position++;
@@ -210,7 +207,7 @@ public final class LZSEncoding {
                         context_data_val = (context_data_val << 1) | (value & 1);
                         if (context_data_position == bitsPerChar - 1) {
                             context_data_position = 0;
-                            context_data.append((char) (((getCharFromInt == null) ? context_data_val : getCharFromInt[context_data_val]) + offset));
+                            context_data.append(getCharFromInt[context_data_val]);
                             context_data_val = 0;
                         } else {
                             context_data_position++;
@@ -237,7 +234,7 @@ public final class LZSEncoding {
                         context_data_val = (context_data_val << 1);
                         if (context_data_position == bitsPerChar - 1) {
                             context_data_position = 0;
-                            context_data.append((char) (((getCharFromInt == null) ? context_data_val : getCharFromInt[context_data_val]) + offset));
+                            context_data.append(getCharFromInt[context_data_val]);
                             context_data_val = 0;
                         } else {
                             context_data_position++;
@@ -248,7 +245,7 @@ public final class LZSEncoding {
                         context_data_val = (context_data_val << 1) | (value & 1);
                         if (context_data_position == bitsPerChar - 1) {
                             context_data_position = 0;
-                            context_data.append((char) (((getCharFromInt == null) ? context_data_val : getCharFromInt[context_data_val]) + offset));
+                            context_data.append(getCharFromInt[context_data_val]);
                             context_data_val = 0;
                         } else {
                             context_data_position++;
@@ -261,7 +258,7 @@ public final class LZSEncoding {
                         context_data_val = (context_data_val << 1) | value;
                         if (context_data_position == bitsPerChar - 1) {
                             context_data_position = 0;
-                            context_data.append((char) (((getCharFromInt == null) ? context_data_val : getCharFromInt[context_data_val]) + offset));
+                            context_data.append(getCharFromInt[context_data_val]);
                             context_data_val = 0;
                         } else {
                             context_data_position++;
@@ -273,7 +270,7 @@ public final class LZSEncoding {
                         context_data_val = (context_data_val << 1) | (value & 1);
                         if (context_data_position == bitsPerChar - 1) {
                             context_data_position = 0;
-                            context_data.append((char) (((getCharFromInt == null) ? context_data_val : getCharFromInt[context_data_val]) + offset));
+                            context_data.append(getCharFromInt[context_data_val]);
                             context_data_val = 0;
                         } else {
                             context_data_position++;
@@ -289,7 +286,7 @@ public final class LZSEncoding {
                     context_data_val = (context_data_val << 1) | (value & 1);
                     if (context_data_position == bitsPerChar - 1) {
                         context_data_position = 0;
-                        context_data.append((char) (((getCharFromInt == null) ? context_data_val : getCharFromInt[context_data_val]) + offset));
+                        context_data.append(getCharFromInt[context_data_val]);
                         context_data_val = 0;
                     } else {
                         context_data_position++;
@@ -306,7 +303,7 @@ public final class LZSEncoding {
             context_data_val = (context_data_val << 1) | (value & 1);
             if (context_data_position == bitsPerChar - 1) {
                 context_data_position = 0;
-                context_data.append((char) (((getCharFromInt == null) ? context_data_val : getCharFromInt[context_data_val]) + offset));
+                context_data.append(getCharFromInt[context_data_val]);
                 context_data_val = 0;
             } else {
                 context_data_position++;
@@ -318,7 +315,212 @@ public final class LZSEncoding {
         while (true) {
             context_data_val = (context_data_val << 1);
             if (context_data_position == bitsPerChar - 1) {
-                context_data.append((char) (((getCharFromInt == null) ? context_data_val : getCharFromInt[context_data_val]) + offset));
+                context_data.append(getCharFromInt[context_data_val]);
+                break;
+            } else
+                context_data_position++;
+        }
+        return context_data.toString();
+    }
+
+    private static String _compress(String uncompressedStr, int bitsPerChar, int offset) {
+        if (uncompressedStr == null) return null;
+        if (uncompressedStr.isEmpty()) return "";
+        int i, value;
+        HashMap<String, Integer> context_dictionary = new HashMap<>();
+        HashSet<String> context_dictionaryToCreate = new HashSet<>();
+        String context_c;
+        String context_wc;
+        String context_w = "";
+        int context_enlargeIn = 2; // Compensate for the first entry which should not count
+        int context_dictSize = 3;
+        int context_numBits = 2;
+        StringBuilder context_data = new StringBuilder(uncompressedStr.length() >>> 1);
+        int context_data_val = 0;
+        int context_data_position = 0;
+        int ii;
+
+        int uncompressedLength = uncompressedStr.length();
+        for (ii = 0; ii < uncompressedLength; ii++) {
+            context_c = String.valueOf(uncompressedStr.charAt(ii));
+            if (!context_dictionary.containsKey(context_c)) {
+                context_dictionary.put(context_c, context_dictSize++);
+                context_dictionaryToCreate.add(context_c);
+            }
+
+            context_wc = context_w + context_c;
+            if (context_dictionary.containsKey(context_wc)) {
+                context_w = context_wc;
+            } else {
+                if (context_dictionaryToCreate.contains(context_w)) {
+                    if ((value = context_w.charAt(0)) < 256) {
+                        for (i = 0; i < context_numBits; i++) {
+                            context_data_val = (context_data_val << 1);
+                            if (context_data_position == bitsPerChar - 1) {
+                                context_data_position = 0;
+                                context_data.append((char) (context_data_val + offset));
+                                context_data_val = 0;
+                            } else {
+                                context_data_position++;
+                            }
+                        }
+                        for (i = 0; i < 8; i++) {
+                            context_data_val = (context_data_val << 1) | (value & 1);
+                            if (context_data_position == bitsPerChar - 1) {
+                                context_data_position = 0;
+                                context_data.append((char) (context_data_val + offset));
+                                context_data_val = 0;
+                            } else {
+                                context_data_position++;
+                            }
+                            value >>= 1;
+                        }
+                    } else {
+                        value = 1;
+                        for (i = 0; i < context_numBits; i++) {
+                            context_data_val = (context_data_val << 1) | value;
+                            if (context_data_position == bitsPerChar - 1) {
+                                context_data_position = 0;
+                                context_data.append((char) (context_data_val + offset));
+                                context_data_val = 0;
+                            } else {
+                                context_data_position++;
+                            }
+                            value = 0;
+                        }
+                        value = context_w.charAt(0);
+                        for (i = 0; i < 16; i++) {
+                            context_data_val = (context_data_val << 1) | (value & 1);
+                            if (context_data_position == bitsPerChar - 1) {
+                                context_data_position = 0;
+                                context_data.append((char) (context_data_val + offset));
+                                context_data_val = 0;
+                            } else {
+                                context_data_position++;
+                            }
+                            value >>= 1;
+                        }
+                    }
+                    context_enlargeIn--;
+                    if (context_enlargeIn == 0) {
+                        context_enlargeIn = 1 << context_numBits++;
+                    }
+                    context_dictionaryToCreate.remove(context_w);
+                } else {
+                    value = context_dictionary.get(context_w);
+                    for (i = 0; i < context_numBits; i++) {
+                        context_data_val = (context_data_val << 1) | (value & 1);
+                        if (context_data_position == bitsPerChar - 1) {
+                            context_data_position = 0;
+                            context_data.append((char) (context_data_val + offset));
+                            context_data_val = 0;
+                        } else {
+                            context_data_position++;
+                        }
+                        value >>= 1;
+                    }
+
+                }
+                context_enlargeIn--;
+                if (context_enlargeIn == 0) {
+                    context_enlargeIn = 1 << context_numBits++;
+                }
+                // Add wc to the dictionary.
+                context_dictionary.put(context_wc, context_dictSize++);
+                context_w = context_c;
+            }
+        }
+
+        // Output the code for w.
+        if (!context_w.isEmpty()) {
+            if (context_dictionaryToCreate.contains(context_w)) {
+                if (context_w.charAt(0) < 256) {
+                    for (i = 0; i < context_numBits; i++) {
+                        context_data_val = (context_data_val << 1);
+                        if (context_data_position == bitsPerChar - 1) {
+                            context_data_position = 0;
+                            context_data.append((char) (context_data_val + offset));
+                            context_data_val = 0;
+                        } else {
+                            context_data_position++;
+                        }
+                    }
+                    value = context_w.charAt(0);
+                    for (i = 0; i < 8; i++) {
+                        context_data_val = (context_data_val << 1) | (value & 1);
+                        if (context_data_position == bitsPerChar - 1) {
+                            context_data_position = 0;
+                            context_data.append((char) (context_data_val + offset));
+                            context_data_val = 0;
+                        } else {
+                            context_data_position++;
+                        }
+                        value >>= 1;
+                    }
+                } else {
+                    value = 1;
+                    for (i = 0; i < context_numBits; i++) {
+                        context_data_val = (context_data_val << 1) | value;
+                        if (context_data_position == bitsPerChar - 1) {
+                            context_data_position = 0;
+                            context_data.append((char) (context_data_val + offset));
+                            context_data_val = 0;
+                        } else {
+                            context_data_position++;
+                        }
+                        value = 0;
+                    }
+                    value = context_w.charAt(0);
+                    for (i = 0; i < 16; i++) {
+                        context_data_val = (context_data_val << 1) | (value & 1);
+                        if (context_data_position == bitsPerChar - 1) {
+                            context_data_position = 0;
+                            context_data.append((char) (context_data_val + offset));
+                            context_data_val = 0;
+                        } else {
+                            context_data_position++;
+                        }
+                        value >>= 1;
+                    }
+                }
+
+                context_dictionaryToCreate.remove(context_w);
+            } else {
+                value = context_dictionary.get(context_w);
+                for (i = 0; i < context_numBits; i++) {
+                    context_data_val = (context_data_val << 1) | (value & 1);
+                    if (context_data_position == bitsPerChar - 1) {
+                        context_data_position = 0;
+                        context_data.append((char) (context_data_val + offset));
+                        context_data_val = 0;
+                    } else {
+                        context_data_position++;
+                    }
+                    value >>= 1;
+                }
+
+            }
+        }
+
+        // Mark the end of the stream
+        value = 2;
+        for (i = 0; i < context_numBits; i++) {
+            context_data_val = (context_data_val << 1) | (value & 1);
+            if (context_data_position == bitsPerChar - 1) {
+                context_data_position = 0;
+                context_data.append((char) (context_data_val + offset));
+                context_data_val = 0;
+            } else {
+                context_data_position++;
+            }
+            value >>= 1;
+        }
+
+        // Flush the last char
+        while (true) {
+            context_data_val = (context_data_val << 1);
+            if (context_data_position == bitsPerChar - 1) {
+                context_data.append((char) (context_data_val + offset));
                 break;
             } else
                 context_data_position++;
@@ -333,21 +535,21 @@ public final class LZSEncoding {
     public static String decompress(final String compressed) {
         if (compressed == null)
             return null;
-        if (compressed.isEmpty())
+        if (compressed.length() == 0)
             return "";
-        return _decompress(compressed.length(), 32768, compressed.toCharArray(), null, 0);
+        return _decompress(compressed.length(), 32768, compressed, 0);
     }
 
-    private static String _decompress(int length, int resetValue, char[] getNextValue, char[] modify, int offset) {
+    private static String _decompress(int length, String getNextValue, char[] modify) {
         if(getNextValue == null)
             return null;
-        if(getNextValue.length == 0)
+        if(getNextValue.length() == 0)
             return "";
-        ArrayList<String> dictionary = new ArrayList<String>();
-        int enlargeIn = 4, dictSize = 4, numBits = 3, position = resetValue, index = 1, resb, maxpower, power;
+        ArrayList<String> dictionary = new ArrayList<>();
+        int enlargeIn = 4, dictSize = 4, numBits = 3, position = 32, index = 1, resb, maxpower, power;
         String entry, w, c;
-        ArrayList<String> result = new ArrayList<String>();
-        char bits, val = (modify == null) ? (char) (getNextValue[0] + offset) : modify[getNextValue[0]];
+        ArrayList<String> result = new ArrayList<>();
+        char bits, val = modify[getNextValue.charAt(0)];
 
         for (char i = 0; i < 3; i++) {
             dictionary.add(i, String.valueOf(i));
@@ -360,10 +562,10 @@ public final class LZSEncoding {
             resb = val & position;
             position >>= 1;
             if (position == 0) {
-                position = resetValue;
-                val = (modify == null) ? (char) (getNextValue[index++] + offset) : modify[getNextValue[index++]];
+                position = 32;
+                val = modify[getNextValue.charAt(index++)];
             }
-            bits |= (resb > 0 ? 1 : 0) << power++;
+            bits |= ((-resb) >>> 31) << power++;
         }
 
         switch (bits) {
@@ -375,10 +577,10 @@ public final class LZSEncoding {
                     resb = val & position;
                     position >>= 1;
                     if (position == 0) {
-                        position = resetValue;
-                        val = (modify == null) ? (char) (getNextValue[index++] + offset) : modify[getNextValue[index++]];
+                        position = 32;
+                        val = modify[getNextValue.charAt(index++)];
                     }
-                    bits |= (resb > 0 ? 1 : 0) << power++;
+                    bits |= ((-resb) >>> 31) << power++;
                 }
                 c = String.valueOf(bits);
                 break;
@@ -390,10 +592,10 @@ public final class LZSEncoding {
                     resb = val & position;
                     position >>= 1;
                     if (position == 0) {
-                        position = resetValue;
-                        val = (modify == null) ? (char) (getNextValue[index++] + offset) : modify[getNextValue[index++]];
+                        position = 32;
+                        val = modify[getNextValue.charAt(index++)];
                     }
-                    bits |= (resb > 0 ? 1 : 0) << power++;
+                    bits |= ((-resb) >>> 31) << power++;
                 }
                 c = String.valueOf(bits);
                 break;
@@ -414,10 +616,10 @@ public final class LZSEncoding {
                 resb = val & position;
                 position >>= 1;
                 if (position == 0) {
-                    position = resetValue;
-                    val = (modify == null) ? (char) (getNextValue[index++] + offset) : modify[getNextValue[index++]];
+                    position = 32;
+                    val = modify[getNextValue.charAt(index++)];
                 }
-                cc |= (resb > 0 ? 1 : 0) << power++;
+                cc |= ((-resb) >>> 31) << power++;
             }
             switch (cc) {
                 case 0:
@@ -428,10 +630,10 @@ public final class LZSEncoding {
                         resb = val & position;
                         position >>= 1;
                         if (position == 0) {
-                            position = resetValue;
-                            val = (modify == null) ? (char) (getNextValue[index++] + offset) : modify[getNextValue[index++]];
+                            position = 32;
+                            val = modify[getNextValue.charAt(index++)];
                         }
-                        bits |= (resb > 0 ? 1 : 0) << power++;
+                        bits |= ((-resb) >>> 31) << power++;
                     }
 
                     dictionary.add(String.valueOf(bits));
@@ -446,10 +648,10 @@ public final class LZSEncoding {
                         resb = val & position;
                         position >>= 1;
                         if (position == 0) {
-                            position = resetValue;
-                            val = (modify == null) ? (char) (getNextValue[index++] + offset) : modify[getNextValue[index++]];
+                            position = 32;
+                            val = modify[getNextValue.charAt(index++)];
                         }
-                        bits |= (resb > 0 ? 1 : 0) << power++;
+                        bits |= ((-resb) >>> 31) << power++;
                     }
                     dictionary.add(String.valueOf(bits));
                     cc = dictSize++;
@@ -492,5 +694,158 @@ public final class LZSEncoding {
 
         }
 
+    }
+    private static String _decompress(int length, int resetValue, String getNextValue, int offset) {
+        if(getNextValue == null)
+            return null;
+        if(getNextValue.length() == 0)
+            return "";
+        ArrayList<String> dictionary = new ArrayList<>();
+        int enlargeIn = 4, dictSize = 4, numBits = 3, position = resetValue, index = 1, resb, maxpower, power;
+        String entry, w, c;
+        ArrayList<String> result = new ArrayList<>();
+        char bits, val = (char) (getNextValue.charAt(0) + offset);
+
+        for (char i = 0; i < 3; i++) {
+            dictionary.add(i, String.valueOf(i));
+        }
+
+        bits = 0;
+        maxpower = 2;
+        power = 0;
+        while (power != maxpower) {
+            resb = val & position;
+            position >>= 1;
+            if (position == 0) {
+                position = resetValue;
+                val = (char) (getNextValue.charAt(index++) + offset);
+            }
+            bits |= ((-resb) >>> 31) << power++;
+        }
+
+        switch (bits) {
+            case 0:
+                maxpower = 8;
+                power = 0;
+                while (power != maxpower) {
+                    resb = val & position;
+                    position >>= 1;
+                    if (position == 0) {
+                        position = resetValue;
+                        val = (char) (getNextValue.charAt(index++) + offset);
+                    }
+                    bits |= ((-resb) >>> 31) << power++;
+                }
+                c = String.valueOf(bits);
+                break;
+            case 1:
+                bits = 0;
+                maxpower = 16;
+                power = 0;
+                while (power != maxpower) {
+                    resb = val & position;
+                    position >>= 1;
+                    if (position == 0) {
+                        position = resetValue;
+                        val = (char) (getNextValue.charAt(index++) + offset);
+                    }
+                    bits |= ((-resb) >>> 31) << power++;
+                }
+                c = String.valueOf(bits);
+                break;
+            default:
+                return "";
+        }
+        dictionary.add(c);
+        w = c;
+        result.add(w);
+        while (true) {
+            if (index > length) {
+                return "";
+            }
+            int cc = 0;
+            maxpower = numBits;
+            power = 0;
+            while (power != maxpower) {
+                resb = val & position;
+                position >>= 1;
+                if (position == 0) {
+                    position = resetValue;
+                    val = (char) (getNextValue.charAt(index++) + offset);
+                }
+                cc |= ((-resb) >>> 31) << power++;
+            }
+            switch (cc) {
+                case 0:
+                    bits = 0;
+                    maxpower = 8;
+                    power = 0;
+                    while (power != maxpower) {
+                        resb = val & position;
+                        position >>= 1;
+                        if (position == 0) {
+                            position = resetValue;
+                            val = (char) (getNextValue.charAt(index++) + offset);
+                        }
+                        bits |= ((-resb) >>> 31) << power++;
+                    }
+
+                    dictionary.add(String.valueOf(bits));
+                    cc = dictSize++;
+                    enlargeIn--;
+                    break;
+                case 1:
+                    bits = 0;
+                    maxpower = 16;
+                    power = 0;
+                    while (power != maxpower) {
+                        resb = val & position;
+                        position >>= 1;
+                        if (position == 0) {
+                            position = resetValue;
+                            val = (char) (getNextValue.charAt(index++) + offset);
+                        }
+                        bits |= ((-resb) >>> 31) << power++;
+                    }
+                    dictionary.add(String.valueOf(bits));
+                    cc = dictSize++;
+                    enlargeIn--;
+                    break;
+                case 2:
+                    StringBuilder sb = new StringBuilder(result.size());
+                    for (String s : result)
+                        sb.append(s);
+                    return sb.toString();
+            }
+
+            if (enlargeIn == 0) {
+                enlargeIn = 1 << numBits;
+                numBits++;
+            }
+
+            if (cc < dictionary.size() && dictionary.get(cc) != null) {
+                entry = dictionary.get(cc);
+            } else {
+                if (cc == dictSize) {
+                    entry = w + w.charAt(0);
+                } else {
+                    return "";
+                }
+            }
+            result.add(entry);
+
+            // Add w+entry[0] to the dictionary.
+            dictionary.add(w + entry.charAt(0));
+            dictSize++;
+            enlargeIn--;
+
+            w = entry;
+
+            if (enlargeIn == 0) {
+                enlargeIn = 1 << numBits;
+                numBits++;
+            }
+
+        }
     }
 }
