@@ -15,7 +15,7 @@ import java.util.HashSet;
 
 public final class LZSEncoding {
 
-    private LZSEncoding() {};
+    private LZSEncoding() {}
     private static final char[] keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".toCharArray(),
             keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$".toCharArray(),
             valStrBase64 = new char[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -122,8 +122,8 @@ public final class LZSEncoding {
         if (uncompressedStr == null) return null;
         if (uncompressedStr.isEmpty()) return "";
         int i, value;
-        HashMap<String, Integer> context_dictionary = new HashMap<>();
-        HashSet<String> context_dictionaryToCreate = new HashSet<>();
+        HashMap<String, Integer> context_dictionary = new HashMap<>(uncompressedStr.length() >>> 3, 0.5f);
+        HashSet<String> context_dictionaryToCreate = new HashSet<>(uncompressedStr.length() >>> 3, 0.5f);
         String context_c;
         String context_wc;
         String context_w = "";
@@ -327,8 +327,8 @@ public final class LZSEncoding {
         if (uncompressedStr == null) return null;
         if (uncompressedStr.isEmpty()) return "";
         int i, value;
-        HashMap<String, Integer> context_dictionary = new HashMap<>();
-        HashSet<String> context_dictionaryToCreate = new HashSet<>();
+        HashMap<String, Integer> context_dictionary = new HashMap<>(uncompressedStr.length() >>> 3, 0.5f);
+        HashSet<String> context_dictionaryToCreate = new HashSet<>(uncompressedStr.length() >>> 3, 0.5f);
         String context_c;
         String context_wc;
         String context_w = "";
@@ -548,7 +548,7 @@ public final class LZSEncoding {
         ArrayList<String> dictionary = new ArrayList<>();
         int enlargeIn = 4, dictSize = 4, numBits = 3, position = 32, index = 1, resb, maxpower, power;
         String entry, w, c;
-        ArrayList<String> result = new ArrayList<>();
+        StringBuilder sb = new StringBuilder(getNextValue.length());
         char bits, val = modify[getNextValue.charAt(0)];
 
         for (char i = 0; i < 3; i++) {
@@ -570,7 +570,6 @@ public final class LZSEncoding {
 
         switch (bits) {
             case 0:
-                bits = 0;
                 maxpower = 8;
                 power = 0;
                 while (power != maxpower) {
@@ -604,7 +603,7 @@ public final class LZSEncoding {
         }
         dictionary.add(c);
         w = c;
-        result.add(w);
+        sb.append(w);
         while (true) {
             if (index > length) {
                 return "";
@@ -658,9 +657,6 @@ public final class LZSEncoding {
                     enlargeIn--;
                     break;
                 case 2:
-                    StringBuilder sb = new StringBuilder(result.size());
-                    for (String s : result)
-                        sb.append(s);
                     return sb.toString();
             }
 
@@ -678,7 +674,7 @@ public final class LZSEncoding {
                     return "";
                 }
             }
-            result.add(entry);
+            sb.append(entry);
 
             // Add w+entry[0] to the dictionary.
             dictionary.add(w + entry.charAt(0));
@@ -703,7 +699,7 @@ public final class LZSEncoding {
         ArrayList<String> dictionary = new ArrayList<>();
         int enlargeIn = 4, dictSize = 4, numBits = 3, position = resetValue, index = 1, resb, maxpower, power;
         String entry, w, c;
-        ArrayList<String> result = new ArrayList<>();
+        StringBuilder sb = new StringBuilder(getNextValue.length());
         char bits, val = (char) (getNextValue.charAt(0) + offset);
 
         for (char i = 0; i < 3; i++) {
@@ -758,7 +754,7 @@ public final class LZSEncoding {
         }
         dictionary.add(c);
         w = c;
-        result.add(w);
+        sb.append(w);
         while (true) {
             if (index > length) {
                 return "";
@@ -812,9 +808,6 @@ public final class LZSEncoding {
                     enlargeIn--;
                     break;
                 case 2:
-                    StringBuilder sb = new StringBuilder(result.size());
-                    for (String s : result)
-                        sb.append(s);
                     return sb.toString();
             }
 
@@ -832,7 +825,7 @@ public final class LZSEncoding {
                     return "";
                 }
             }
-            result.add(entry);
+            sb.append(entry);
 
             // Add w+entry[0] to the dictionary.
             dictionary.add(w + entry.charAt(0));
