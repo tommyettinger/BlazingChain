@@ -55,6 +55,7 @@
         <maven.source.version>3.0.1</maven.source.version>
         <maven.gpg.version>1.6</maven.gpg.version>
         <jdk.version>1.7</jdk.version>
+        <releaseVersion>7</releaseVersion>
         <which.test>Producer</which.test>
     </properties>
 
@@ -115,6 +116,24 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>releaseLow</id>
+            <activation>
+                <jdk>[9,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>${maven.compiler.version}</version>
+                        <configuration>
+                            <release>${releaseVersion}</release>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -216,25 +235,25 @@
                     <detectOfflineLinks>false</detectOfflineLinks>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/assembly.xml</descriptor>
-                    </descriptors>
-                    <outputDirectory>${project.build.directory}/${which.test}</outputDirectory>
-                    <archive>
-                        <manifest>
-                            <mainClass>blazing.chain.${which.test}</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-                <!--
-                <configuration>
-                </configuration>
-                -->
-            </plugin>
+<!--            <plugin>-->
+<!--                <artifactId>maven-assembly-plugin</artifactId>-->
+<!--                <version>3.1.0</version>-->
+<!--                <configuration>-->
+<!--                    <descriptors>-->
+<!--                        <descriptor>src/main/assembly/assembly.xml</descriptor>-->
+<!--                    </descriptors>-->
+<!--                    <outputDirectory>${project.build.directory}/${which.test}</outputDirectory>-->
+<!--                    <archive>-->
+<!--                        <manifest>-->
+<!--                            <mainClass>blazing.chain.${which.test}</mainClass>-->
+<!--                        </manifest>-->
+<!--                    </archive>-->
+<!--                </configuration>-->
+<!--                &lt;!&ndash;-->
+<!--                <configuration>-->
+<!--                </configuration>-->
+<!--                &ndash;&gt;-->
+<!--            </plugin>-->
         </plugins>
     </build>
 
