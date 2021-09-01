@@ -1,20 +1,29 @@
 package blazing.chain.demo;
 
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ByteArray;
-import com.badlogic.gdx.utils.ObjectIntMap;
-import com.badlogic.gdx.utils.ObjectSet;
 
 import java.lang.StringBuilder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class LZByteEncoding {
+    /**
+     * Compresses a String using a type of LZ-compression and returns it as a byte array. If you are transmitting data
+     * over the network or writing it directly to a binary file, this wastes fewer bits than using
+     * LZSEncoding's compressToUTF16(String). You can read the byte array this produces with
+     * {@link #decompressFromBytes(byte[])}, which will produce the original String. This does very well if
+     * {@code uncompressedStr} contains highly repetitive data, and fairly well in some cases where it doesn't.
+     * @param uncompressedStr a String that you want to compress
+     * @return a byte array containing the compressed data for {@code uncompressedStr}
+     */
     public static byte[] compressToBytes(String uncompressedStr) {
         if (uncompressedStr == null) return null;
         if (uncompressedStr.isEmpty()) return new byte[0];
         final int bitsPerChar = 8;
         int i, value;
-        ObjectIntMap<String> context_dictionary = new ObjectIntMap<>();
-        ObjectSet<String> context_dictionaryToCreate = new ObjectSet<>();
+        HashMap<String, Integer> context_dictionary = new HashMap<>(256, 0.5f);
+        HashSet<String> context_dictionaryToCreate = new HashSet<>(256, 0.5f);
         String context_c;
         String context_wc;
         String context_w = "";
@@ -93,7 +102,7 @@ public class LZByteEncoding {
                     }
                     context_dictionaryToCreate.remove(context_w);
                 } else {
-                    value = context_dictionary.get(context_w, 0);
+                    value = context_dictionary.get(context_w);
                     for (i = 0; i < context_numBits; i++) {
                         context_data_val = (byte)((context_data_val << 1) | (value & 1));
                         if (context_data_position == bitsPerChar - 1) {
@@ -172,7 +181,7 @@ public class LZByteEncoding {
 
                 context_dictionaryToCreate.remove(context_w);
             } else {
-                value = context_dictionary.get(context_w, 0);
+                value = context_dictionary.get(context_w);
                 for (i = 0; i < context_numBits; i++) {
                     context_data_val = (byte)((context_data_val << 1) | (value & 1));
                     if (context_data_position == bitsPerChar - 1) {
@@ -213,19 +222,26 @@ public class LZByteEncoding {
         }
         return context_data.shrink();
     }
-    public static String decompressFromBytes(byte[] getNextValue) {
-        if(getNextValue == null)
+
+    /**
+     * Decompresses a byte array produced (at some point) by {@link #compressToBytes(String)}, getting the original
+     * String back that was given to compressToBytes().
+     * @param compressedBytes a byte array produced by {@link #compressToBytes(String)}
+     * @return the String that was originally passed to {@link #compressToBytes(String)}
+     */
+    public static String decompressFromBytes(byte[] compressedBytes) {
+        if(compressedBytes == null)
             return null;
-        final int length = getNextValue.length;
+        final int length = compressedBytes.length;
         if(length == 0)
             return "";
         final int resetValue = 128;
-        Array<String> dictionary = new Array<>(String.class);
+        ArrayList<String> dictionary = new ArrayList<>(256);
         int enlargeIn = 4, dictSize = 4, numBits = 3, position = resetValue, index = 1, resb, maxpower, power;
         String entry, w, c;
         StringBuilder res = new StringBuilder(length);
         char bits;
-        int val = getNextValue[0];
+        int val = compressedBytes[0];
 
         for (char i = 0; i < 3; i++) {
             dictionary.add(String.valueOf(i));
@@ -239,14 +255,13 @@ public class LZByteEncoding {
             position >>>= 1;
             if (position == 0) {
                 position = resetValue;
-                val = getNextValue[index++];
+                val = compressedBytes[index++];
             }
             bits |= (resb != 0 ? 1 : 0) << power++;
         }
 
         switch (bits) {
             case 0:
-                bits = 0;
                 maxpower = 8;
                 power = 0;
                 while (power != maxpower) {
@@ -254,7 +269,7 @@ public class LZByteEncoding {
                     position >>>= 1;
                     if (position == 0) {
                         position = resetValue;
-                        val = getNextValue[index++];
+                        val = compressedBytes[index++];
                     }
                     bits |= (resb != 0 ? 1 : 0) << power++;
                 }
@@ -269,7 +284,7 @@ public class LZByteEncoding {
                     position >>>= 1;
                     if (position == 0) {
                         position = resetValue;
-                        val = getNextValue[index++];
+                        val = compressedBytes[index++];
                     }
                     bits |= (resb != 0 ? 1 : 0) << power++;
                 }
@@ -293,7 +308,7 @@ public class LZByteEncoding {
                 position >>>= 1;
                 if (position == 0) {
                     position = resetValue;
-                    val = getNextValue[index++];
+                    val = compressedBytes[index++];
                 }
                 cc |= (resb != 0 ? 1 : 0) << power++;
             }
@@ -307,7 +322,7 @@ public class LZByteEncoding {
                         position >>>= 1;
                         if (position == 0) {
                             position = resetValue;
-                            val = getNextValue[index++];
+                            val = compressedBytes[index++];
                         }
                         bits |= (resb != 0 ? 1 : 0) << power++;
                     }
@@ -325,7 +340,7 @@ public class LZByteEncoding {
                         position >>>= 1;
                         if (position == 0) {
                             position = resetValue;
-                            val = getNextValue[index++];
+                            val = compressedBytes[index++];
                         }
                         bits |= (resb != 0 ? 1 : 0) << power++;
                     }
@@ -342,7 +357,7 @@ public class LZByteEncoding {
                 numBits++;
             }
 
-            if (cc < dictionary.size && dictionary.get(cc) != null) {
+            if (cc < dictionary.size() && dictionary.get(cc) != null) {
                 entry = dictionary.get(cc);
             } else {
                 if (cc == dictSize) {
@@ -370,7 +385,7 @@ public class LZByteEncoding {
 
     public static String join(byte... elements) {
         if (elements == null || elements.length == 0) return "";
-        StringBuilder sb = new StringBuilder(64);
+        StringBuilder sb = new StringBuilder(elements.length << 1);
         sb.append(elements[0]);
         for (int i = 1; i < elements.length; i++) {
             sb.append(',').append(elements[i]);
