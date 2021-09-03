@@ -6,7 +6,7 @@
 
     <groupId>com.github.tommyettinger</groupId>
     <artifactId>blazingchain</artifactId>
-    <version>1.4.4.4-SNAPSHOT</version>
+    <version>1.4.4.4</version>
     <!-- api "com.github.tommyettinger:blazingchain:1.4.4.3" -->
     <description>LZ-String encoding for Java; cross-platform to desktop, GWT, and Android at the minimum.
     </description>

@@ -5,14 +5,18 @@ import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.ObjectIntMap;
 import com.badlogic.gdx.utils.ObjectSet;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+
 public class LZIntEncoding {
     public static int[] compressToInts(String uncompressedStr) {
         if (uncompressedStr == null) return null;
         if (uncompressedStr.isEmpty()) return new int[0];
         final int bitsPerChar = 32;
         int i, value;
-        ObjectIntMap<String> context_dictionary = new ObjectIntMap<>();
-        ObjectSet<String> context_dictionaryToCreate = new ObjectSet<>();
+        HashMap<String, Integer> context_dictionary = new HashMap<>(256, 0.5f);
+        HashSet<String> context_dictionaryToCreate = new HashSet<>(256, 0.5f);
         String context_c;
         String context_wc;
         String context_w = "";
@@ -91,7 +95,7 @@ public class LZIntEncoding {
                     }
                     context_dictionaryToCreate.remove(context_w);
                 } else {
-                    value = context_dictionary.get(context_w, 0);
+                    value = context_dictionary.get(context_w);
                     for (i = 0; i < context_numBits; i++) {
                         context_data_val = (context_data_val << 1) | (value & 1);
                         if (context_data_position == bitsPerChar - 1) {
@@ -170,7 +174,7 @@ public class LZIntEncoding {
 
                 context_dictionaryToCreate.remove(context_w);
             } else {
-                value = context_dictionary.get(context_w, 0);
+                value = context_dictionary.get(context_w);
                 for (i = 0; i < context_numBits; i++) {
                     context_data_val = (context_data_val << 1) | (value & 1);
                     if (context_data_position == bitsPerChar - 1) {
@@ -218,7 +222,7 @@ public class LZIntEncoding {
         if(length == 0)
             return "";
         final int resetValue = 0x80000000;
-        Array<String> dictionary = new Array<>(String.class);
+        ArrayList<String> dictionary = new ArrayList<>(length >>> 1);
         int enlargeIn = 4, dictSize = 4, numBits = 3, position = resetValue, index = 1, resb, maxpower, power;
         String entry, w, c;
         StringBuilder res = new StringBuilder(length);
@@ -340,7 +344,7 @@ public class LZIntEncoding {
                 numBits++;
             }
 
-            if (cc < dictionary.size && dictionary.get(cc) != null) {
+            if (cc < dictionary.size() && dictionary.get(cc) != null) {
                 entry = dictionary.get(cc);
             } else {
                 if (cc == dictSize) {

@@ -88,9 +88,15 @@ Installation
 ---
 
 You can get this version (which should be compatible with lz-string 1.4.4)
-[using this info on Maven Central](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cblazingchain%7C1.4.4.3%7Cjar).
+[using this info on Maven Central](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cblazingchain%7C1.4.4.4%7Cjar).
 That page provides dependency info for many build tools including Maven, Gradle, Ivy, SBT, and Lein.
-There should be a release on GitHub as well. For GWT, you will need this inherits line:
+There should be a release on GitHub as well. If you just want a quick dependency for Gradle, it looks like:
+
+```groovy
+implementation "com.github.tommyettinger:blazingchain:1.4.4.4"
+```
+
+If you use this with GWT, you will need this inherits line in your .gwt.xml file:
 
 `<inherits name='blazing.chain' />`
 
@@ -109,3 +115,8 @@ I have no idea what the poem means, but it mixes ASCII and non-ASCII characters 
 Each has versions in uncompressed form as well as compressed with UTF16, URI Encoding, and Base-64 modes.
 The mode corresponding to `compress()` and `uncompress()` is not provided because I don't know how to accurately
 write its invalid UTF-16 codepoints to disk.
+
+The `demo/TransmissionDemo/` folder has the sources for the aforementioned demo, but it also has an
+LZByteEncoding and LZIntEncoding class. LZByteEncoding is more likely to be useful, and is more up-to-date;
+it compresses a String to a byte array and back again. That is probably desirable for networking tasks, but
+using it depends on [libGDX](https://libgdx.com/), so it isn't part of the main repo.
