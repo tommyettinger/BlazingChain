@@ -6,10 +6,18 @@
 
     <groupId>com.github.tommyettinger</groupId>
     <artifactId>blazingchain</artifactId>
-    <version>1.4.4.4</version>
-    <!-- api "com.github.tommyettinger:blazingchain:1.4.4.3" -->
+    <version>1.4.4.5-SNAPSHOT</version>
+    <!-- api "com.github.tommyettinger:blazingchain:1.4.4.4" -->
     <description>LZ-String encoding for Java; cross-platform to desktop, GWT, and Android at the minimum.
     </description>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
     <name>BlazingChain</name>
 
 
@@ -54,8 +62,8 @@
         <maven.resources.version>3.1.0</maven.resources.version>
         <maven.source.version>3.0.1</maven.source.version>
         <maven.gpg.version>1.6</maven.gpg.version>
-        <jdk.version>1.7</jdk.version>
-        <releaseVersion>7</releaseVersion>
+        <jdk.version>1.8</jdk.version>
+        <releaseVersion>8</releaseVersion>
         <which.test>Producer</which.test>
     </properties>
 
