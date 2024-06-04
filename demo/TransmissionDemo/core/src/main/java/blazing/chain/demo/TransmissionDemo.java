@@ -53,12 +53,12 @@ public class TransmissionDemo extends ApplicationAdapter {
             currentText = mars;
         if(compressedText == null || compressedText.isEmpty())
         {
-            compressedText = compressToUTF16(currentText);
+            compressedText = compressToBase64(currentText);
         }
-        byte[] bc = LZByteEncoding.compressToBytes(currentText);
-        System.out.println(LZByteEncoding.join(bc));
-        System.out.println();
-        System.out.println(LZByteEncoding.decompressFromBytes(bc));
+//        byte[] bc = LZByteEncoding.compressToBytes(currentText);
+//        System.out.println(LZByteEncoding.join(bc));
+//        System.out.println();
+//        System.out.println(LZByteEncoding.decompressFromBytes(bc));
 
         stage = new Stage(new ScreenViewport());
 
@@ -85,7 +85,7 @@ public class TransmissionDemo extends ApplicationAdapter {
         compressButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                compressedText = compressToUTF16(currentText = currentArea.getText());
+                compressedText = compressToBase64(currentText = currentArea.getText());
                 compressedArea.setText(compressedText);
                 preferences.putString("normal", currentText);
                 preferences.putString("compressed", compressedText);
@@ -105,9 +105,9 @@ public class TransmissionDemo extends ApplicationAdapter {
         decompressButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                currentText = decompressFromUTF16(compressedText = compressedArea.getText());
+                currentText = decompressFromBase64(compressedText = compressedArea.getText());
                 currentArea.setText(currentText);
-                if(compressToUTF16(currentText).equals(compressedText)) {
+                if(compressToBase64(currentText).equals(compressedText)) {
                     allGood.setText("All Good!");
                     allGood.setColor(Color.GREEN);
                 }
@@ -135,9 +135,16 @@ public class TransmissionDemo extends ApplicationAdapter {
             public void changed(ChangeEvent event, Actor actor) {
                 currentText = mars;
                 currentArea.setText(currentText);
-                compressedText = Gdx.files.internal("PrincessOfMarsUTF16.txt").readString("UTF16");
+//                String poem = Gdx.files.local("TuopaTuopiTuimanTunnon.txt").readString("UTF8");
+//                String compressed = compressToUTF16(poem);
+//                Gdx.files.local("UTF16.txt").writeString(compressed, false, "UTF8");
+//                Gdx.files.local("Normal.txt").writeString(decompressFromUTF16(Gdx.files.local("UTF16.txt").readString("UTF8")), false, "UTF8");
+                compressedText = Gdx.files.internal("PrincessOfMarsUTF16.txt").readString("UTF8");
                 compressedArea.setText(compressedText);
-                if(decompressFromUTF16(compressedText).equals(currentText)){
+                String decompressed = decompressFromUTF16(compressedText);
+                System.out.println("compressed:\n" + compressedText);
+                System.out.println("decompressed:\n" + decompressed);
+                if(decompressed.equals(currentText)){
                         allGood.setText("All Good!");
                         allGood.setColor(Color.GREEN);
                 }

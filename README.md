@@ -100,6 +100,13 @@ If you use this with GWT, you will need this inherits line in your .gwt.xml file
 
 `<inherits name='blazing.chain' />`
 
+And you will also need a `:sources` dependency in `html/build.gradle`:
+
+```groovy
+implementation "com.github.tommyettinger:blazingchain:1.4.4.4:sources"
+```
+
+
 Other
 ---
 

@@ -7,7 +7,7 @@ buildscript {
 		gradlePluginPortal()
 	}
 	dependencies {
-		classpath "org.wisepersist:gwt-gradle-plugin:$gwtPluginVersion"
+		classpath "org.docstr:gwt-gradle-plugin:$gwtPluginVersion"
 	}
 }
 
@@ -28,7 +28,7 @@ subprojects {
 	version = '0.0.1-SNAPSHOT'
 	ext.appName = 'TransmissionDemo'
 	repositories {
-		mavenLocal()
+//		mavenLocal()
 		mavenCentral()
 		maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
 		maven { url 'https://jitpack.io' }
