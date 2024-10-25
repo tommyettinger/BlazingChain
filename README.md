@@ -88,12 +88,12 @@ Installation
 ---
 
 You can get this version (which should be compatible with lz-string 1.4.4)
-[using this info on Maven Central](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cblazingchain%7C1.4.4.4%7Cjar).
+[using this info on Maven Central](http://search.maven.org/#artifactdetails%7Ccom.github.tommyettinger%7Cblazingchain%7C1.4.4.5%7Cjar).
 That page provides dependency info for many build tools including Maven, Gradle, Ivy, SBT, and Lein.
 There should be a release on GitHub as well. If you just want a quick dependency for Gradle, it looks like:
 
 ```groovy
-implementation "com.github.tommyettinger:blazingchain:1.4.4.4"
+implementation "com.github.tommyettinger:blazingchain:1.4.4.5"
 ```
 
 If you use this with GWT, you will need this inherits line in your .gwt.xml file:
@@ -103,7 +103,7 @@ If you use this with GWT, you will need this inherits line in your .gwt.xml file
 And you will also need a `:sources` dependency in `html/build.gradle`:
 
 ```groovy
-implementation "com.github.tommyettinger:blazingchain:1.4.4.4:sources"
+implementation "com.github.tommyettinger:blazingchain:1.4.4.5:sources"
 ```
 
 
