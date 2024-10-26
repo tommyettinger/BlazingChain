@@ -6,8 +6,8 @@
 
     <groupId>com.github.tommyettinger</groupId>
     <artifactId>blazingchain</artifactId>
-    <version>1.4.4.5</version>
-    <!-- api "com.github.tommyettinger:blazingchain:1.4.4.5" -->
+    <version>1.4.4.6-SNAPSHOT</version>
+    <!-- api "com.github.tommyettinger:blazingchain:1.4.4.6" -->
     <description>LZ-String encoding for Java; cross-platform to desktop, GWT, and Android at the minimum.
     </description>
     <dependencies>
@@ -243,25 +243,6 @@
                     <detectOfflineLinks>false</detectOfflineLinks>
                 </configuration>
             </plugin>
-<!--            <plugin>-->
-<!--                <artifactId>maven-assembly-plugin</artifactId>-->
-<!--                <version>3.1.0</version>-->
-<!--                <configuration>-->
-<!--                    <descriptors>-->
-<!--                        <descriptor>src/main/assembly/assembly.xml</descriptor>-->
-<!--                    </descriptors>-->
-<!--                    <outputDirectory>${project.build.directory}/${which.test}</outputDirectory>-->
-<!--                    <archive>-->
-<!--                        <manifest>-->
-<!--                            <mainClass>blazing.chain.${which.test}</mainClass>-->
-<!--                        </manifest>-->
-<!--                    </archive>-->
-<!--                </configuration>-->
-<!--                &lt;!&ndash;-->
-<!--                <configuration>-->
-<!--                </configuration>-->
-<!--                &ndash;&gt;-->
-<!--            </plugin>-->
         </plugins>
     </build>
 
