@@ -93,7 +93,7 @@ That page provides dependency info for many build tools including Maven, Gradle,
 There should be a release on GitHub as well. If you just want a quick dependency for Gradle, it looks like:
 
 ```groovy
-implementation "com.github.tommyettinger:blazingchain:1.4.4.5"
+implementation "com.github.tommyettinger:blazingchain:1.4.4.6"
 ```
 
 If you use this with GWT, you will need this inherits line in your .gwt.xml file:
@@ -103,7 +103,7 @@ If you use this with GWT, you will need this inherits line in your .gwt.xml file
 And you will also need a `:sources` dependency in `html/build.gradle`:
 
 ```groovy
-implementation "com.github.tommyettinger:blazingchain:1.4.4.5:sources"
+implementation "com.github.tommyettinger:blazingchain:1.4.4.6:sources"
 ```
 
 

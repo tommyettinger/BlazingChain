@@ -6,7 +6,7 @@
 
     <groupId>com.github.tommyettinger</groupId>
     <artifactId>blazingchain</artifactId>
-    <version>1.4.4.6-SNAPSHOT</version>
+    <version>1.4.4.6</version>
     <!-- api "com.github.tommyettinger:blazingchain:1.4.4.6" -->
     <description>LZ-String encoding for Java; cross-platform to desktop, GWT, and Android at the minimum.
     </description>
@@ -14,7 +14,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>RELEASE</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
